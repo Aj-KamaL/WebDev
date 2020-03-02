@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width,height=device-height, initial-scale=1.0">
+  <head>
+    <title>India Map</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+    <!-- <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"> -->
+    <!-- <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script> -->
+
+    <style type="text/css">
+    body 
+    {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    svg {
+      background: #f7f7f7;
+    }
+
+    #india {
+      stroke: #101010;
+      stroke-width: .6;
+    }
+
+    div.tooltip {
+      position: absolute;
+      text-align: center;
+      padding: 0.5em;
+      font-size: 10px;
+      color: #222;
+      background: #FFF;
+      border-radius: 2px;
+      pointer-events: none;
+      box-shadow: 0px 0px 2px 0px #a6a6a6;
+    }
+
+    .key path {
+        display: none;
+    }
+
+    .key line {
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .key text {
+        font-size: 10px;
+    }
+
+    .key rect{
+      stroke-width: .4;
+    }
+    #chart {
+        font-family: "Calibri";
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .dot { stroke: #000; }
+
+    .axis path, .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .year.label {
+        font: 500 196px "Calibri";
+        fill: #ddd;
+    }
+
+    .overlay {
+        fill: yellow;
+        opacity: 30%;
+        pointer-events: all;
+        cursor: ew-resize;
+    }
+      .d3-tip {
+      font-family: "Calibri";
+      line-height: 1;
+      font-weight: bold;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      color: #fff;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    /* Creates a small triangle extender for the tooltip */
+    .d3-tip:after {
+      box-sizing: border-box;
+      display: inline;
+      font-size: 10px;
+      width: 100%;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.4);
+      position: absolute;
+      pointer-events: none;
+    }
+
+    /* Northward tooltips */
+    .d3-tip.n:after {
+      content: "\25BC";
+      margin: -1px 0 0 0;
+      top: 100%;
+      left: 0;
+      text-align: center;
+    }
+
+    /* Eastward tooltips */
+    .d3-tip.e:after {
+      content: "\25C0";
+      margin: -4px 0 0 0;
+      top: 50%;
+      left: -8px;
+    }
+
+    /* Southward tooltips */
+    .d3-tip.s:after {
+      content: "\25B2";
+      margin: 0 0 1px 0;
+      top: -8px;
+      left: 0;
+      text-align: center;
+    }
+
+    /* Westward tooltips */
+    .d3-tip.w:after {
+      content: "\25B6";
+      margin: -4px 0 0 -1px;
+      top: 50%;
+      left: 100%;
+    }
+
+    .btn3d {
+  position: relative;
+  top: -6px;
+  border: 0;
+  transition: all 40ms linear;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.btn3d:active:focus,
+.btn3d:focus:hover,
+.btn3d:focus {
+  -moz-outline-style: none;
+  outline: medium none;
+}
+
+.btn3d:active,
+.btn3d.active {
+  top: 2px;
+}
+
+.btn3d.btn-info {
+  box-shadow: 0 0 0 1px #00a5c3 inset, 0 0 0 2px rgba(255, 255, 255, 0.15) inset, 0 8px 0 0 #348FD2, 0 8px 8px 1px rgba(0, 0, 0, 0.5);
+  background-color: #39B3D7;
+}
+
+.btn3d.btn-info:active,
+.btn3d.btn-info.active {
+  box-shadow: 0 0 0 1px #00a5c3 inset, 0 0 0 1px rgba(255, 255, 255, 0.15) inset, 0 1px 3px 1px rgba(0, 0, 0, 0.3);
+  background-color: #39B3D7;
+}
+
+
+    </style>
+  </head>
+  <body>
+    <div id="chart">
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.20/topojson.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.6.3/d3-tip.min.js"></script>
+    <script>
+    var widthh = (screen.width/2.5);
+    var heightt = (screen.height)*0.85;
+    var selectedstates=[]
+    var blockedstates=["Tripura", "Nagaland", "Jammu & Kashmir","Mizoram","Arunanchal Pradesh","Meghalaya", "Sikkim","Manipur","Goa"]
+    var projection = d3.geo.mercator();
+
+    var path = d3.geo.path()
+        .projection(projection)
+        .pointRadius(2);
+    var map = d3.select("#chart").append("svg:svg")
+        .attr("width", widthh)
+        .attr("height", heightt);
+
+    var india= map.append("svg:g")
+               .attr("id", "india");
+
+    var headlin = map.append("svg:text")
+        .attr("class", "headlin")
+        .attr("text-anchor", "start")
+        .attr("y", 60 )
+        .attr("x", 15)
+        .style("font-size", "32px")
+        .attr("font-family","Calibri")
+        .text("Select State(s) in Map of India");
+                   
+    var div = d3.select("body").append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+// ****************************************************************************************************************
+      var margin = { top: 25, right: 25, bottom: 25, left:25},
+          width =  screen.width/1.3 - margin.right,
+          widt =  screen.width/1.65 - margin.right,
+          height =(screen.height)*0.85 - margin.top - margin.bottom;
+          heigh = (screen.height)*0.78 - margin.top - margin.bottom;
+      // console.log(width-widt + " "+height) 
+      // Various scales. These domains make assumptions of data, naturally.
+      var xScale = d3.scale.linear().domain([1988, 2019]).range([0, widt]);
+          // yScale = d3.scale.linear().domain([0.1, 65]).range([height, 0]),
+          radiusScale = d3.scale.linear().domain([0, 12994534]).range([0, 100]);
+      var color = d3.scale.ordinal()
+         .domain([
+           "India",
+           "Andaman and Nicobar Island",
+           "Andhra Pradesh",
+           "Arunachal Pradesh",
+           "Assam",
+           "Bihar",
+           "Chandigarh",
+           "Chhattisgarh",
+           "Dadra and Nagar Haveli",
+           "Daman and Diu",
+           "Delhi",
+           "Goa",
+           "Gujarat",
+           "Haryana",
+           "Himachal Pradesh",
+           "Jammu & Kashmir",
+           "Jharkhand",
+           "Karnataka",
+           "Kerala",
+           "Lakshwadeep",
+           "Madhya Pradesh",
+           "Maharashtra",
+           "Manipur",
+           "Meghalaya",
+           "Mizoram",
+           "Nagaland",
+           "Odisha",
+           "Pondicherry",
+           "Punjab",
+           "Rajasthan",
+           "Sikkim",
+           "Tamil Nadu",
+           "Telangana",
+           "Tripura",
+           "Uttar Pradesh",
+           "Uttarakhand",
+           "West Bengal"])
+           .range([
+           '#444444',
+           '#444444',
+           'RosyBrown',
+           '#444444',
+           'Pink',
+           'SpringGreen',
+           '#444444',
+           'Maroon',
+           '#444444',
+           '#444444',
+           'BlueViolet',
+           '#444444',
+           'Brown',
+           'DeepSkyBlue',
+           'Salmon',
+           '#444444',
+           'Yellow',
+           'Gold',
+           'Cyan',
+           '#444444',
+           'Tomato',
+           'Navy',
+           '#444444',
+           '#444444',
+           '#444444',
+           '#444444',
+           'LawnGreen',
+           '#444444',
+           'OliveDrab',
+           'Blue',
+           '#444444',
+           'Crimson',
+           'Green',
+           '#444444',
+           'Purple',
+           'Aquamarine',
+           'MediumOrchid'
+          ])    
+      var tickss = [1993,1999,2006,2014,2016,2018];
+      var tickLabelss = ['NFHS-1','NFHS-2','NFHS-3','RSOC','NFHS-4','CNNS']
+
+      var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
+      .tickValues(tickss)
+      .tickFormat(function(d,i){ return tickLabelss[i] })
+
+      var svg = d3.select("#chart").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      var headline = svg.append("text")
+          .attr("class", "headline")
+          .attr("text-anchor", "start")
+          .attr("y", 32 )
+          .attr("x", 0)
+          .style("font-size", "32px")
+          .attr("font-family","Calibri")
+          .text("Prevelance and Burden"); 
+
+      // Add the x-axis.
+      var xtickss=svg.append("g")
+          .attr("class", "x axis")
+          // .attr("font-family","Calibri")
+          .style("font", "14.5px times")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      xtickss.selectAll('text')
+        .attr("font-family","Calibri");
+      svg.append("text")
+          .attr("class", "x label")
+          .attr("font-family","Calibri")
+          .attr("text-anchor", "end")
+          .attr("x", widt)    
+          .attr("y", height - 6)
+          .text("Round");
+
+      // Add a y-axis label.
+      var ylb=svg.append("text")
+          .attr("class", "y label")
+          .attr("font-family","Calibri")
+          .attr("text-anchor", "end")
+          .attr("y", 6)
+          .attr("x", -80)
+          .attr("dy", ".75em")    
+          .attr("transform", "rotate(-90)")
+          // .text("OverallS3d");
+
+      // Add the year label; the value is set on transition.
+      var label = svg.append("text")
+          .attr("class", "year label")
+          .attr("text-anchor", "end")
+          .attr("y", height -(height/2) )
+          .style("font-size", "160px")
+          .attr("font-family","Calibri")
+          .attr("x", widt-(widt/4))
+          // .text("None");
+
+       var format = d3.format(".2s");
+
+      var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .direction('s')
+        .html(function(d) {
+          return "<p><strong>" + d.Region + "</strong></p><p><strong>Burden: </strong> <span style='color:red'>" + format(d.BurdenoverallS3d) + "</p>";
+        })
+
+// ******************************************************************************************************************
+    d3.json("https://raw.githubusercontent.com/Raj-Kamal/Data/master/india.json", function(error, data){
+
+      var boundary = centerZoom(data);
+      var subunits = drawSubUnits(data);
+      colorSubunits(subunits);
+      // drawSubUnitLabels(data);
+      // drawPlaces(data);
+      // drawOuterBoundary(data, boundary);
+      subunits
+      .on('click', function (d, i) 
+      {
+        // console.log(d.properties.st_nm)
+        if(blockedstates.indexOf(d.properties.st_nm)==-1)
+        {
+          d3.select(this).transition()
+          .text(d.properties.st_nm)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 30) + "px")
+          .style("opacity", 1);
+          div.transition()
+          .text(d.properties.st_nm)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 30) + "px")
+          .style("opacity", 1);
+        }
+
+        if(selectedstates.indexOf(d.properties.st_nm)==-1)
+        {
+          if(d.properties.st_nm=="NCT of Delhi"){
+            // console.log("Delhi")
+            selectedstates.push("Delhi")
+          }
+          else{
+            selectedstates.push(d.properties.st_nm)
+          }
+          
+        }        
+      })
+      .on('mouseleave', function (d, i) {
+      })
+      .on('mouseenter', function (d, i) {
+      });
+
+
+    });
+    var circlee1 = svg.append("circle")
+    			  .attr("class", "crcl")
+                  .attr("cx", width-120)
+                  .attr("cy", height/6)
+                  .attr("fill", "#7C7474")
+                  .attr("r", 100);
+    var scale1 = svg.append("text")
+        .attr("class", "scla")
+        .attr("text-anchor", "end")
+        .attr("y", height/6+135 )
+        .attr("x", width-40)
+        .style("font-size", "35px")
+        .attr("font-family","Calibri")
+        .text("13 Million"); 
+
+    var circlee2 = svg.append("circle")
+    			  .attr("class", "crcl")
+                  .attr("cx", width-120)
+                  .attr("cy", height/2+10)
+                  .attr("fill", "#7C7474")
+                  .attr("r", 50);
+    var scale2 = svg.append("text")
+        .attr("class", "scla")
+        .attr("text-anchor", "end")
+        .attr("y", height/2+100 )
+        .attr("x", width-40)
+        .style("font-size", "35px")
+        .attr("font-family","Calibri")
+        .text("8.7 Million");
+
+    var circlee3 = svg.append("circle")
+    			  .attr("class", "crcl")
+                  .attr("cx", width-120)
+                  .attr("cy", (height*2.2)/3+20)
+                  .attr("fill", "#7C7474")
+                  .attr("r", 25);
+    var scale3 = svg.append("text")
+        .attr("class", "scla")
+        .attr("text-anchor", "end")
+        .attr("y", (height*2.2)/3+80 )
+        .attr("x", width-40)
+        .style("font-size", "35px")
+        .attr("font-family","Calibri")
+        .text("4.3 Million");
+    var circlee4 = svg.append("circle")
+    		   	  .attr("class", "crcl")
+                  .attr("cx", width-120)
+                  .attr("cy", (height*2.6)/3+30)
+                  .attr("fill", "#7C7474")
+                  .attr("r", 10);
+    var scale4 = svg.append("text")
+        .attr("class", "scla")
+        .attr("text-anchor", "end")
+        .attr("y", (height*2.6)/3+80 )
+        .attr("x", width-40)
+        .style("font-size", "35px")
+        .attr("font-family","Calibri")
+        .text("2.2 Million");             
+    function centerZoom(data){
+
+      var o = topojson.mesh(data, data.objects.polygons, function(a, b) { return a === b; });
+
+      projection
+          .scale(1)
+          .translate([0, 0]);
+
+      // var b = path.bounds(o),
+      //     s = 1 / Math.max((b[1][0] - b[0][0]) / widthh, (b[1][1] - b[0][1]) / heightt),
+      //     t = [(widthh - s * (b[1][0] + b[0][0])) / 2.2, (heightt - s * (b[1][1] + b[0][1])) / 1.97];
+
+      // var p = projection
+      //     .scale(s/1.065)
+      //     .translate(t);
+      var b = path.bounds(o),
+          s = 1 / Math.max((b[1][0] - b[0][0]) / widthh, (b[1][1] - b[0][1]) / heightt),
+          t = [(widthh - s * (b[1][0] + b[0][0])) / 2.18, (heightt - s * (b[1][1] + b[0][1])) / 2];
+
+      var p = projection
+          .scale(s/1.085)
+          .translate(t);
+      // console.log(s,t)
+      return o;
+
+    }
+
+    function drawOuterBoundary(data, boundary){
+
+      india.append("path")
+          .datum(boundary)
+          .attr("d", path)
+          .attr("class", "subunit-boundary")
+          .attr("fill", "none")
+          .attr("stroke", "#3a403d");
+
+    }
+
+    function drawPlaces(data){
+
+      india.append("path")
+          .datum(topojson.feature(data, data.objects.places))
+          .attr("d", path)
+          .attr("class", "place");
+
+      india.selectAll(".place-label")
+          .data(topojson.feature(data, data.objects.places).features)
+        .enter().append("text")
+          .attr("class", "place-label")
+          .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
+          .attr("dy", ".35em")
+          .attr("x", 6)
+          .attr("text-anchor", "start")
+          .style("font-size", ".7em")
+          .style("text-shadow", "0px 0px 2px #fff")
+          .text(function(d) { return d.properties.name; });
+
+    }
+
+    function drawSubUnits(data){
+
+      var subunits = india.selectAll(".subunit")
+          .data(topojson.feature(data, data.objects.polygons).features)
+        .enter().append("path")
+          .attr("class", "subunit")
+          .attr("d", path)
+          .style("stroke", "#fff")
+          .style("stroke-width", "1px");
+
+      return subunits;
+
+    }
+
+    function drawSubUnitLabels(data){
+
+      india.selectAll(".subunit-label")
+          .data(topojson.feature(data, data.objects.polygons).features)
+        .enter().append("text")
+          .attr("class", "subunit-label")
+          .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
+          .attr("dy", ".35em")
+          .attr("text-anchor", "middle")
+          .style("font-size", ".5em")
+          .style("text-shadow", "0px 0px 2px #fff")
+          .style("text-transform", "uppercase")
+          .text(function(d) { return d.properties.st_nm; });
+
+    }
+
+    function colorSubunits(subunits) 
+    {    
+      var colorScale = d3.scale.ordinal()
+         .domain([
+          "India",
+          "Andaman and Nicobar Island",
+          "Andhra Pradesh",
+          "Arunachal Pradesh",
+          "Assam",
+          "Bihar",
+          "Chandigarh",
+          "Chhattisgarh",
+          "Dadra and Nagar Haveli",
+          "Daman and Diu",
+          "Delhi",
+          "Goa",
+          "Gujarat",
+          "Haryana",
+          "Himachal Pradesh",
+          "Jammu & Kashmir",
+          "Jharkhand",
+          "Karnataka",
+          "Kerala",
+          "Lakshwadeep",
+          "Madhya Pradesh",
+          "Maharashtra",
+          "Manipur",
+          "Meghalaya",
+          "Mizoram",
+          "Nagaland",
+          "Odisha",
+          "Pondicherry",
+          "Punjab",
+          "Rajasthan",
+          "Sikkim",
+          "Tamil Nadu",
+          "Telangana",
+          "Tripura",
+          "Uttar Pradesh",
+          "Uttarakhand",
+          "West Bengal"])
+          .range([
+          '#444444',
+          '#444444',
+          'RosyBrown',
+          '#444444',
+          'Pink',
+          'SpringGreen',
+          '#444444',
+          'Maroon',
+          '#444444',
+          '#444444',
+          'BlueViolet',
+          '#444444',
+          'Brown',
+          'DeepSkyBlue',
+          'Salmon',
+          '#444444',
+          'Yellow',
+          'Gold',
+          'Cyan',
+          '#444444',
+          'Tomato',
+          'Navy',
+          '#444444',
+          '#444444',
+          '#444444',
+          '#444444',
+          'LawnGreen',
+          '#444444',
+          'OliveDrab',
+          'Blue',
+          '#444444',
+          'Crimson',
+          'Green',
+          '#444444',
+          'Purple',
+          'Aquamarine',
+          'MediumOrchid'
+         ])  
+          subunits
+          .style("fill", function(d,i){ return colorScale(d.properties.st_nm); })
+          .style("opacity", ".45");
+
+    }
+    function x(d) { return d.Source; }
+    function y(d) { return d.OverallS3d; }
+    function radius(d) { return d.BurdenoverallS3d; }
+    function color(d) { return d.Region; }
+
+    function drawMC(valindx) 
+    {
+      // console.log("States list")
+      // console.log(selectedstates)
+
+      svg.select(".overlay").remove();
+
+      if(valindx==1)
+      {
+        headline
+        .attr("x", width/16)
+        .text("Prevelance and Burden of Severely Stunted");
+
+        svg.select(".yaxis").remove()
+        var yScale = d3.scale.linear().domain([0, 42]).range([height, height-heigh])
+        var yAxis = d3.svg.axis().scale(yScale).orient("left")
+
+        
+
+        svg.append("g")
+        .attr("class", "yaxis")
+        .call(yAxis);
+
+        var loc_max=7412375;
+        svg.selectAll(".crcl").remove();
+    	svg.selectAll(".scla").remove();
+        circlee1 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", height/6)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*loc_max);
+        scale1 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", height/6+135 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("7.4 Million"); 
+
+        circlee2 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", height/2+10)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/2));
+        scale2 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", height/2+100 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("3.7 Million");
+
+        circlee3 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", (height*2.2)/3+20)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/4));
+        scale3 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", (height*2.2)/3+80 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("1.9 Million");
+        circlee4 = svg.append("circle")
+        		   	  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", (height*2.6)/3+30)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/8));
+        scale4 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", (height*2.6)/3+80 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("0.95 Million"); 
+
+      }
+      else if(valindx==2){
+        headline
+        .attr("x", width/12)
+        .text("Prevelance and Burden of Stunted");
+        svg.select(".yaxis").remove()
+        var yScale = d3.scale.linear().domain([0, 72]).range([height, height-heigh])
+        var yAxis = d3.svg.axis().scale(yScale).orient("left")
+
+        
+
+        svg.append("g")
+        .attr("class", "yaxis")
+        .call(yAxis);
+
+        var loc_max=13000000;
+        svg.selectAll(".crcl").remove();
+    	svg.selectAll(".scla").remove();
+        circlee1 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", height/6)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*loc_max);
+        scale1 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", height/6+135 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("13 Million"); 
+
+        circlee2 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", height/2+10)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/2));
+        scale2 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", height/2+100 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("6.5 Million");
+
+        circlee3 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", (height*2.2)/3+20)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/4));
+        scale3 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", (height*2.2)/3+80 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("3.3 Million");
+        circlee4 = svg.append("circle")
+        		   	  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", (height*2.6)/3+30)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/8));
+        scale4 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", (height*2.6)/3+80 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("1.7 Million"); 
+
+      }
+      else if(valindx==3)
+      {
+        headline
+        .attr("x", width/16)
+        .text("Prevelance and Burden of Severely Wasted");
+        svg.select(".yaxis").remove()
+        var yScale = d3.scale.linear().domain([0, 15]).range([height,height-heigh])
+        var yAxis = d3.svg.axis().scale(yScale).orient("left")
+
+        
+
+        svg.append("g")
+        .attr("class", "yaxis")
+        .call(yAxis);
+
+        var loc_max=1482900;
+        svg.selectAll(".crcl").remove();
+    	svg.selectAll(".scla").remove();
+        circlee1 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", height/6)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*loc_max);
+        scale1 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", height/6+135 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("1.5 Million"); 
+
+        circlee2 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", height/2+10)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/2));
+        scale2 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", height/2+100 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("0.75 Million");
+
+        circlee3 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", (height*2.2)/3+20)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/4));
+        scale3 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", (height*2.2)/3+80 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("0.38 Million");
+        circlee4 = svg.append("circle")
+        		   	  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", (height*2.6)/3+30)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/8));
+        scale4 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", (height*2.6)/3+80 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("0.19 Million"); 
+
+
+      }
+      else if(valindx==4)
+      {
+        headline
+        .attr("x", width/12)
+        .text("Prevelance and Burden of Wasted");
+        svg.select(".yaxis").remove()                   
+        // var radiusScale = d3.scale.linear().domain([150, 9000000]).range([2, 200])
+        var yScale = d3.scale.linear().domain([0, 36]).range([height,height-heigh])
+        var yAxis = d3.svg.axis().scale(yScale).orient("left")
+
+        
+
+        svg.append("g")
+        .attr("class", "yaxis")
+        .call(yAxis);
+
+        var loc_max=4423985;
+
+        svg.selectAll(".crcl").remove();
+    	svg.selectAll(".scla").remove();
+        circlee1 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", height/6)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*loc_max);
+        scale1 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", height/6+135 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("4.4 Million"); 
+
+        circlee2 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", height/2+10)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/2));
+        scale2 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", height/2+100 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("2.2 Million");
+
+        circlee3 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", (height*2.2)/3+20)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/4));
+        scale3 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", (height*2.2)/3+80 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("1.1 Million");
+        circlee4 = svg.append("circle")
+        		   	  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", (height*2.6)/3+30)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/8));
+        scale4 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", (height*2.6)/3+80 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("0.56 Million"); 
+
+      }
+      else if(valindx==5)
+      {
+        headline
+        .attr("x", 0)
+        .text("Prevelance and Burden of Severely Underweight");
+        svg.select(".yaxis").remove()
+        // var radiusScale = d3.scale.linear().domain([170, 50000000]).range([2, 200])
+        var yScale = d3.scale.linear().domain([0, 31.5]).range([height,height-heigh])
+        var yAxis = d3.svg.axis().scale(yScale).orient("left")
+
+        
+
+        svg.append("g")
+        .attr("class", "yaxis")
+        .call(yAxis);
+
+        var loc_max=4586826;
+        svg.selectAll(".crcl").remove();
+    	svg.selectAll(".scla").remove();
+        circlee1 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", height/6)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*loc_max);
+        scale1 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", height/6+135 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("4.6 Million"); 
+
+        circlee2 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", height/2+10)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/2));
+        scale2 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", height/2+100 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("2.3 Million");
+
+        circlee3 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", (height*2.2)/3+20)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/4));
+        scale3 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", (height*2.2)/3+80 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("1.2 Million");
+        circlee4 = svg.append("circle")
+        		   	  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", (height*2.6)/3+30)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/8));
+        scale4 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", (height*2.6)/3+80 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("0.6 Million"); 
+
+      }
+      else if(valindx==6)
+      {
+        headline
+        .attr("x", width/14)
+        .text("Prevelance and Burden of Underweight");
+        svg.select(".yaxis").remove()
+        // var radiusScale = d3.scale.linear().domain([850, 24000000]).range([2, 200])
+        var yScale = d3.scale.linear().domain([0, 72]).range([height,height-heigh])
+        var yAxis = d3.svg.axis().scale(yScale).orient("left")
+
+        
+
+        svg.append("g")
+        .attr("class", "yaxis")
+        .call(yAxis);
+
+        var loc_max=11194210;
+        svg.selectAll(".crcl").remove();
+    	svg.selectAll(".scla").remove();
+        circlee1 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", height/6)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*loc_max);
+        scale1 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", height/6+135 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("11.2 Million"); 
+
+        circlee2 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", height/2+10)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/2));
+        scale2 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", height/2+100 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("5.6 Million");
+
+        circlee3 = svg.append("circle")
+        			  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", (height*2.2)/3+20)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/4));
+        scale3 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", (height*2.2)/3+80 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("2.8 Million");
+        circlee4 = svg.append("circle")
+        		   	  .attr("class", "crcl")
+                      .attr("cx", width-120)
+                      .attr("cy", (height*2.6)/3+30)
+                      .attr("fill", "#7C7474")
+                      .attr("r", (100/13000000)*(loc_max/8));
+        scale4 = svg.append("text")
+            .attr("class", "scla")
+            .attr("text-anchor", "end")
+            .attr("y", (height*2.6)/3+80 )
+            .attr("x", width-40)
+            .style("font-size", "35px")
+            .attr("font-family","Calibri")
+            .text("1.4 Million"); 
+
+      }
+      
+      d3.json("https://raw.githubusercontent.com/Raj-Kamal/Data/master/DATAS.js", function(nations) 
+      // d3.json("KDATA.js", function(nations) 
+      {
+          // A bisector since many nation's data is sparsely-defined.
+          var bisect = d3.bisector(function(d) { return d[0]; });
+          
+          nations = nations.filter(function(d, i) 
+          { 
+            for(var j=0;j<selectedstates.length;j++)
+            {
+              if (d["Region"] ==selectedstates[j] ) 
+              { 
+                return d; 
+              } 
+
+            }
+
+            
+
+          })
+          // console.log(nations)
+          // Add a dot per nation. Initialize the data at 1800, and set the colors.
+          svg.select(".dots").remove();
+          arprob=["Severely Stunted","Stunted","Severely Wasted","Wasted","Severely Underweight","Underweight"];
+
+          ylb
+          .attr("font-family","Calibri")
+          .text(arprob[valindx-1]+" (%)")
+
+          var dot = svg.append("g")
+                  .call(tip)
+                  .attr("class", "dots")
+              .selectAll(".dot")
+                  .data(interpolateData(1992,valindx))
+              .enter().append("circle")
+                  .on('mouseover', tip.show)
+                  .on('mouseout', tip.hide)
+                  .attr("class", function (d) { return "dot " + d.Region; })
+              
+              .call(position)
+              .sort(order);
+        
+          // Add an overlay for the year label.
+          var box = label.node().getBBox();
+        
+          var overlay = svg.append("rect")
+                .attr("class", "overlay")
+                .attr("x", 0)
+                .attr("y", height)
+                .attr("width",widt)
+                .attr("height", box.height)
+                .on("mouseover", enableInteraction);
+        
+          // Start a transition that interpolates the data based on year.
+          svg.transition()
+              .duration(15000)
+              .ease("linear")
+              .tween("year", tweenYear)
+              // .each("end", enableInteraction);
+        
+          // Positions the dots based on data.
+
+          function position(dot) {
+          dot
+              .attr("cx", function(d) { return xScale(x(d)); })
+              .attr("cy", function(d) { return yScale(y(d)); })
+
+              .attr("r", function(d) { return radiusScale(radius(d)); })
+              .style("fill", function(d) { return color(d.Region);})
+              ;
+            }
+        
+          // Defines a sort order so that the smallest dots are drawn on top.
+          function order(a, b) { return radius(b) - radius(a); }
+        
+          // After the transition finishes, you can mouseover to change the year.
+          function enableInteraction() {
+              var yearScale = d3.scale.linear()
+                  .domain([1992, 2018])
+                  .range([0 + 5, 0 + (widt)-5])
+                  .clamp(true);
+
+              // Cancel the current transition, if any.
+              svg.transition().duration(0);
+
+              overlay
+                  .on("mouseover", mouseover)
+                  .on("mouseout", mouseout)
+                  .on("mousemove", mousemove)
+                  .on("touchmove", mousemove);
+
+              function mouseover() { label.classed("active", true); }
+              function mouseout() { label.classed("active", false); }
+              function mousemove() { displayYear(yearScale.invert(d3.mouse(this)[0])); }
+          }
+
+          // Tweens the entire chart by first tweening the year, and then the data.
+          // For the interpolated data, the dots and label are redrawn.
+          function tweenYear() {
+              var year = d3.interpolateNumber(1992, 2018);
+              return function(t) { displayYear(year(t)); };
+          }
+
+          // Updates the display to show the specified year.
+          function displayYear(year) {
+              var tempres=interpolateData(year,valindx)
+              // console.log("Raj2")
+              // var minA=getMin(tempres)
+              // var maxA=getMax(tempres)
+
+              // radiusScale = d3.scale.linear().domain([minA,maxA]).range([minA/(minA/10),38])
+
+              // console.log(radiusScale)
+              
+
+              dot.data(tempres).call(position).sort(order);
+
+              if(selectedstates.length==0){
+                label
+                .attr("font-family","Calibri")
+                .text("None");
+              }
+              else if(selectedstates.length!=0){
+                label
+                .attr("font-family","Calibri")
+                .text(Math.round(year));
+              }
+              
+          }
+          function getMin(matrix, col)
+          {
+            var column = 10000000000000000;
+
+
+            for(var i=0; i<matrix.length; i++)
+            {
+               if(matrix[i].BurdenoverallS3d<column){
+                  column=matrix[i].BurdenoverallS3d
+               }
+            }
+            return column;
+          }
+          function getMax(matrix, col)
+          {
+            var column = -1;
+            console.log(matrix)
+            console.log("L1")
+            console.log(matrix.length)
+            console.log("L2")
+            console.log(matrix[0].BurdenoverallS3d)
+            for(var i=0; i<matrix.length; i++)
+            {
+               if(matrix[i].BurdenoverallS3d>column)
+               {
+                  column=matrix[i].BurdenoverallS3d
+               }
+            }
+            return column;
+          }
+
+        
+
+          // Interpolates the dataset for the given (fractional) year.
+          function interpolateData(year,yrindx) 
+          {
+
+              if(yrindx==1)
+              {
+                // console.log(11)
+                var cdf = nations.map(function(d) 
+                {
+                    return {
+                        Region: d.Region,
+                        Source: interpolateValues(d.Source, year),
+                        BurdenoverallS3d: interpolateValues(d.BurdenoverallS3d, year),
+                        OverallS3d: interpolateValues(d.OverallS3d, year)
+                    };
+                });
+                // var minA=getMin(cdf)
+
+	        	 
+
+
+              }
+
+              else if(yrindx==2)
+              {
+                // console.log(12)
+                var cdf = nations.map(function(d) 
+                {
+                    return {
+                        Region: d.Region,
+                        Source: interpolateValues(d.Source, year),
+                        BurdenoverallS3d: interpolateValues(d.BurdenoverallS2d, year),
+                        OverallS3d: interpolateValues(d.OverallS2d, year)
+                    };
+                });
+
+
+              }
+              else if(yrindx==3)
+              {
+                // console.log(13)
+                var cdf = nations.map(function(d) 
+                {
+                    return {
+                        Region: d.Region,
+                        Source: interpolateValues(d.Source, year),
+                        BurdenoverallS3d: interpolateValues(d.BurdenoverallW3d, year),
+                        OverallS3d: interpolateValues(d.OverallW3d, year)
+                    };
+                });
+
+
+              }
+              else if(yrindx==4)
+              {
+                // console.log(14)
+                var cdf = nations.map(function(d) 
+                {
+                    return {
+                        Region: d.Region,
+                        Source: interpolateValues(d.Source, year),
+                        BurdenoverallS3d: interpolateValues(d.BurdenoverallW2d, year),
+                        OverallS3d: interpolateValues(d.OverallW2d, year)
+                    };
+                });
+
+
+              }
+              else if(yrindx==5)
+              {
+                // console.log(15)
+                var cdf = nations.map(function(d) 
+                {
+                    return {
+                        Region: d.Region,
+                        Source: interpolateValues(d.Source, year),
+                        BurdenoverallS3d: interpolateValues(d.BurdenoverallU3d, year),
+                        OverallS3d: interpolateValues(d.OverallU3d, year)
+                    };
+                });
+
+
+              }
+              else if(yrindx==6)
+              {
+                // console.log(16)
+                var cdf = nations.map(function(d) 
+                {
+                    return {
+                        Region: d.Region,
+                        Source: interpolateValues(d.Source, year),
+                        BurdenoverallS3d: interpolateValues(d.BurdenoverallU2d, year),
+                        OverallS3d: interpolateValues(d.OverallU2d, year)
+                    };
+                });
+
+
+              }
+              // else
+              // {
+              //   console.log(12)
+              //   var cdf=nations.map(function(d) 
+              //   {
+
+              //       return {
+              //           Region: d.Region,
+              //           Survey_presentation_point: interpolateValues(d.Survey_presentation_point, year),
+              //           BurdenoverallS3d: interpolateValues(d.BurdenoverallS2d, year),
+              //           OverallS3d: interpolateValues(d.OverallS2d, year)
+              //       };
+              //   });
+              // }
+              // return 
+              // console.log(cdf)
+
+              // var minA=getMin(cdf)
+              // var maxA=getMax(cdf)
+              // if(yrindx==1){
+
+              //   // var tempstu=(minA-400)/(28000000-400)*(3-1)+1
+              //   // var tempstv=(maxA-400)/(28000000-400)*(150-145)+145
+              //   // console.log(tempstu,tempstv)
+              //   radiusScale = d3.scale.linear().domain([400,27413162]).range([0.5,250])
+
+              // }
+              // else if(yrindx==2){
+              //   // var tempstu=(minA-1760)/(55550000-1760)*(3-1)+1
+              //   // var tempstv=(maxA-1760)/(55550000-1760)*(150-145)+45
+              //   // console.log(tempstu,tempstv)
+              //   radiusScale = d3.scale.linear().domain([1760,55520325]).range([0.5,250])
+
+              // }
+              // else if(yrindx==3){
+              //   // var tempstu=(minA-25)/(8444000-25)*(3-1)+1
+              //   // var tempstv=(maxA-25)/(8444000-25)*(150-145)+45
+              //   // console.log(tempstu,tempstv)
+              //   radiusScale = d3.scale.linear().domain([25,8443550]).range([0.5,250])
+                
+              // }
+              // else if(yrindx==4){
+              //   // var tempstu=(minA-170)/(23962000-170)*(3-1)+1
+              //   // var tempstv=(maxA-170)/(23962000-170)*(150-145)+145
+              //   // console.log(tempstu,tempstv)
+              //   radiusScale = d3.scale.linear().domain([170,23961425]).range([0.5,250])
+                
+              // }
+              // else if(yrindx==5){
+              //   // var tempstu=(minA-1000)/(49159000-1000)*(3-1)+1
+              //   // var tempstv=(maxA-1000)/(49159000-1000)*(150-145)+145
+              //   // console.log(tempstu,tempstv)
+              //   radiusScale = d3.scale.linear().domain([170,18275440]).range([0.5,250])
+                
+              // }
+              // else if(yrindx==6){
+              //   // var tempstu=(minA-170)/(18276000-170)*(3-1)+1
+              //   // var tempstv=(maxA-170)/(18276000-170)*(150-145)+145
+              //   // console.log(tempstu,tempstv)
+              //   radiusScale = d3.scale.linear().domain([1115,49158625]).range([0.5,250])
+                
+              // }
+              return cdf;
+              
+          }
+
+          // Finds (and possibly interpolates) the value for the specified year.
+          function interpolateValues(values, year) 
+          {
+              var i = bisect.left(values, year, 0, values.length - 1),
+                  a = values[i];
+              if (i > 0) {
+                  var b = values[i - 1],
+                      t = (year - a[0]) / (b[0] - a[0]);
+                  return a[1] * (1 - t) + b[1] * t;
+              }
+            return a[1];
+          }
+      });
+    }
+    function Show(){
+      if(selectedstates.length==0)
+      {
+        india.selectAll("path")
+          .style("opacity", 0.5);
+        svg.transition().duration(0);
+        // svg.select(".dots").remove();
+        svg.select(".dots").remove();
+        
+        // svg.select(".year label").text("None");
+      }
+      else{
+        drawMC(1)
+      }
+      
+
+    }
+    function Clear()
+    {
+      headline
+        .attr("x", width/6)
+        .text("Prevelance and Burden");
+      india.selectAll("path")
+        .style("opacity", 0.5);
+
+      svg.transition().duration(0);
+      svg.select(".dots").remove();
+      label
+      .attr("font-family","Calibri")
+      .text("None");
+      // svg.select(".year label").text("None");
+      // svg.select(".overlay").remove();
+      
+      // console.log(selectedstates.length);
+      while(selectedstates.length!=0)
+      {
+        selectedstates.pop()
+      }
+
+      var loc_max=1;
+    svg.selectAll(".crcl").remove();
+	svg.selectAll(".scla").remove();
+    circlee1 = svg.append("circle")
+    			  .attr("class", "crcl")
+                  .attr("cx", width-120)
+                  .attr("cy", height/6)
+                  .attr("fill", "#7C7474")
+                  .attr("r", 100);
+    scale1 = svg.append("text")
+        .attr("class", "scla")
+        .attr("text-anchor", "end")
+        .attr("y", height/6+135 )
+        .attr("x", width-40)
+        .style("font-size", "35px")
+        .attr("font-family","Calibri")
+        .text("13 Million"); 
+
+    circlee2 = svg.append("circle")
+    			  .attr("class", "crcl")
+                  .attr("cx", width-120)
+                  .attr("cy", height/2+10)
+                  .attr("fill", "#7C7474")
+                  .attr("r", 50);
+    scale2 = svg.append("text")
+        .attr("class", "scla")
+        .attr("text-anchor", "end")
+        .attr("y", height/2+100 )
+        .attr("x", width-40)
+        .style("font-size", "35px")
+        .attr("font-family","Calibri")
+        .text("8.7 Million");
+
+    circlee3 = svg.append("circle")
+    			  .attr("class", "crcl")
+                  .attr("cx", width-120)
+                  .attr("cy", (height*2.2)/3+20)
+                  .attr("fill", "#7C7474")
+                  .attr("r", 25);
+    scale3 = svg.append("text")
+        .attr("class", "scla")
+        .attr("text-anchor", "end")
+        .attr("y", (height*2.2)/3+80 )
+        .attr("x", width-40)
+        .style("font-size", "35px")
+        .attr("font-family","Calibri")
+        .text("4.3 Million");
+    circlee4 = svg.append("circle")
+    		   	  .attr("class", "crcl")
+                  .attr("cx", width-120)
+                  .attr("cy", (height*2.6)/3+30)
+                  .attr("fill", "#7C7474")
+                  .attr("r", 10);
+    scale4 = svg.append("text")
+        .attr("class", "scla")
+        .attr("text-anchor", "end")
+        .attr("y", (height*2.6)/3+80 )
+        .attr("x", width-40)
+        .style("font-size", "35px")
+        .attr("font-family","Calibri")
+        .text("2.2 Million");
+
+    }
+    function SelectAl()
+    {
+      india.selectAll("path")
+        .style("opacity", 1);
+      allstats=["India","Andaman and Nicobar Island","Andhra Pradesh","Arunachal Pradesh","Assam",
+                 "Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli","Daman and Diu",
+                 "Delhi","Goa","Gujarat","Haryana","Himachal Pradesh",
+                 "Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Lakshwadeep",
+                 "Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram",
+                 "Nagaland","Odisha","Pondicherry","Punjab","Rajasthan",
+                 "Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh",
+                 "Uttarakhand","West Bengal"];
+      for(var i=0;i<allstats.length;i++)
+      {
+        if(selectedstates.indexOf(allstats[i])==-1)
+        {
+          selectedstates.push(allstats[i]);         
+        }
+      }
+      // console.log(selectedstates.length);
+    }
+
+    </script>
+    <p align>
+      <br><br>
+      <button type="button" class="btn btn-info btn-lg btn3d float-right" onclick="drawMC(3)">Severely Wasted</button>
+      <button type="button" class="btn btn-info btn-lg btn3d float-right" onclick="drawMC(4)">Wasted</button> 
+      <button type="button" class="btn btn-info btn-lg btn3d float-right"  onclick="drawMC(1)">Severely Stunted</button> 
+      <button type="button" class="btn btn-info btn-lg btn3d float-right" onclick="drawMC(2)">Stunted</button>
+      <button type="button" class="btn btn-info btn-lg btn3d float-right" onclick="drawMC(5)">Severely Underweight</button>
+      <button type="button" class="btn btn-info btn-lg btn3d float-right" onclick="drawMC(6)">Underweight</button> 
+      <button type="button" class="btn btn-info btn-lg btn3d float-left" onclick="Clear()">Clear</button>
+      <button type="button" class="btn btn-info btn-lg btn3d float-left" onclick="SelectAl()">Select All</button>
+
+    </p> 
+    </div>
+  </body>
+</html>

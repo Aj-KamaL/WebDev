@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width,height=device-height, initial-scale=1.0">
+<meta charset="utf-8">
+<title>Burden of Malnutrition in States</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+<style>
+#chart {
+    font-family: "Calibri";
+    /*margin-left: -20px;
+    height: 506px;*/
+}
+
+.button{
+font-family: "Calibri";
+}
+
+
+.dot { stroke: #000; }
+
+.axis path, .axis line {
+    /*fill: none;*/
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.year.label {
+    font: 700 350px "Calibri";
+    fill: #ddd;
+}
+
+.overlay {
+    fill: yellow;
+    opacity: 30%;
+    pointer-events: all;
+    cursor: ew-resize;
+}
+  .d3-tip {
+  font-family: "Calibri";
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.4);
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Northward tooltips */
+.d3-tip.n:after {
+  content: "\25BC";
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+  text-align: center;
+}
+
+/* Eastward tooltips */
+.d3-tip.e:after {
+  content: "\25C0";
+  margin: -4px 0 0 0;
+  top: 50%;
+  left: -8px;
+}
+
+/* Southward tooltips */
+.d3-tip.s:after {
+  content: "\25B2";
+  margin: 0 0 1px 0;
+  top: -8px;
+  left: 0;
+  text-align: center;
+}
+
+/* Westward tooltips */
+.d3-tip.w:after {
+  content: "\25B6";
+  margin: -4px 0 0 -1px;
+  top: 50%;
+  left: 100%;
+}
+</style>
+
+<div id="chart"></div>
+
+<script src="https://d3js.org/d3.v3.js"></script>
+
+<!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.6.3/d3-tip.min.js"></script>
+  <script>
+// Chart dimensions.
+var margin = { top: 19.5, right: 19.5, bottom: 19.5, left: 39.5 },
+    width = screen.width,
+    height = screen.height*0.8 ;
+
+// Various scales. These domains make assumptions of data, naturally.
+var xScale = d3.scale.linear().domain([1988, 2019]).range([0, width]);
+    // yScale = d3.scale.linear().domain([0.1, 65]).range([height, 0]),
+    radiusScale = d3.scale.linear().domain([0, 12994534]).range([0, 110]);
+    // colorScale = d3.scale.category10();
+
+var color = d3.scale.ordinal()
+  .domain(["India","Andaman and Nicobar Island","Andhra Pradesh","Arunachal Pradesh","Assam",
+           "Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli","Daman and Diu",
+           "Delhi","Goa","Gujarat","Haryana","Himachal Pradesh",
+           "Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Lakshwadeep",
+           "Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram",
+           "Nagaland","Odisha","Pondicherry","Punjab","Rajasthan",
+           "Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh",
+           "Uttarakhand","West Bengal"])
+
+  // .range(['000000', '441AF4', '9C2331', 'E0C347', '505061', '56c933', 'F481E8', '6849B8', 'BA87ED', 'F4E444', '6AFCAF', '0A48C3', '02B5C7', 'D726F0', '4E4339', '79476E', '768BF5', 'E07A64', '13B3AB', '4F992C', 'f5fc00', '582E42', '322BD8', 'FECA27', '566FF9', 'C23294', 'FED1C1', '3046B1', 'EAFB52', '2B88A7', '269592', 'A817AE', '9EED49', 'F33FE8', 'Tomato', '1B5B1E', 'EB7F31'])
+  .range(['Chocolate','Goldenrod','RosyBrown','Salmon','Pink',
+ 'SpringGreen','Coral','Maroon','Sienna','Magenta',
+ 'BlueViolet','DarkSlateGray','Brown','DeepSkyBlue','Khaki',
+ 'Aquamarine','Yellow','Gold','Cyan','Olive',
+ 'Tomato','Navy','MistyRose','Purple','Red',
+ 'FireBrick','LawnGreen','Teal','Lavender','Blue',
+ 'CornflowerBlue','Crimson','Green','OliveDrab','Indigo',
+ 'Black','MediumOrchid'
+ ])
+
+
+// The x & y axes.
+
+var tickss = [1993,1999,2006,2014,2016,2018];
+var tickLabelss = ['NFHS-1','NFHS-2','NFHS-3','RSOC','NFHS-4','CNNS']
+
+var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
+.tickValues(tickss)
+.tickFormat(function(d,i){ return tickLabelss[i] })
+// .ticks(12, d3.format(",d"));
+
+
+// var yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+// Create the SVG container and set the origin.
+var svg = d3.select("#chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// Add the x-axis.
+var xtickss=svg.append("g")
+    .attr("class", "x axis")
+    // .attr("font-family","Calibri")
+    .style("font", "14.5px times")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+xtickss.selectAll('text')
+	.attr("font-family","Calibri");
+// Add the y-axis.
+// svg.append("g")
+//     .attr("class", "y axis")
+//     .call(yAxis);
+
+// Add an x-axis label.
+svg.append("text")
+    .attr("class", "x label")
+    .attr("font-family","Calibri")
+    .attr("text-anchor", "end")
+    .attr("x", width)    
+    .attr("y", height - 6)
+    .text("Round");
+
+// Add a y-axis label.
+var ylb=svg.append("text")
+    .attr("class", "y label")
+    .attr("font-family","Calibri")
+    .attr("text-anchor", "end")
+    .attr("y", 6)
+    .attr("dy", ".75em")    
+    .attr("transform", "rotate(-90)")
+    // .text("OverallS3d");
+
+// Add the year label; the value is set on transition.
+var label = svg.append("text")
+    .attr("class", "year label")
+    .attr("text-anchor", "end")
+    .attr("y", height -(height/2) )
+    .style("font-size", "160px")
+    .attr("font-family","Calibri")
+    .attr("x", width-(width/2.5))
+    // .text(2006);
+
+ var format = d3.format(".2s");
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .direction('s')
+  .html(function(d) {
+    return "<p><strong>" + d.Region + "</strong></p><p><strong>Burden: </strong> <span style='color:red'>" + format(d.BurdenoverallS3d) + "</p>";
+  })
+
+
+
+
+function x(d) { return d.Source; }
+function y(d) { return d.OverallS3d; }
+function radius(d) { return d.BurdenoverallS3d; }
+function color(d) { return d.Region; }
+
+// Load the data.
+function drawMC(valindx) 
+{
+  //SS
+  svg.select(".overlay").remove();
+  if(valindx==1)
+  {
+    svg.select(".yaxis").remove()
+    // var radiusScale = d3.scale.linear().domain([520, 1300000000]).range([2, 200])
+    var yScale = d3.scale.linear().domain([0, 42]).range([height, 0])
+    var yAxis = d3.svg.axis().scale(yScale).orient("left")
+
+    
+
+    svg.append("g")
+    .attr("class", "yaxis")
+    .call(yAxis);
+
+  }
+  //S
+  else if(valindx==2){
+    svg.select(".yaxis").remove()
+    // var radiusScale = d3.scale.linear().domain([400, 28000000]).range([2, 200])
+    var yScale = d3.scale.linear().domain([0, 72]).range([height, 0])
+    var yAxis = d3.svg.axis().scale(yScale).orient("left")
+
+    
+
+    svg.append("g")
+    .attr("class", "yaxis")
+    .call(yAxis);
+
+
+  }
+  // SW
+  else if(valindx==3)
+  {
+    svg.select(".yaxis").remove()
+    // var radiusScale = d3.scale.linear().domain([25, 60000000]).range([2, 200])
+    var yScale = d3.scale.linear().domain([0, 15]).range([height, 0])
+    var yAxis = d3.svg.axis().scale(yScale).orient("left")
+
+    
+
+    svg.append("g")
+    .attr("class", "yaxis")
+    .call(yAxis);
+
+  }
+  // W
+  else if(valindx==4)
+  {
+    svg.select(".yaxis").remove()                   
+    // var radiusScale = d3.scale.linear().domain([150, 9000000]).range([2, 200])
+    var yScale = d3.scale.linear().domain([0, 36]).range([height, 0])
+    var yAxis = d3.svg.axis().scale(yScale).orient("left")
+
+    
+
+    svg.append("g")
+    .attr("class", "yaxis")
+    .call(yAxis);
+
+  }
+  // SU
+  else if(valindx==5)
+  {
+    svg.select(".yaxis").remove()
+    // var radiusScale = d3.scale.linear().domain([170, 50000000]).range([2, 200])
+    var yScale = d3.scale.linear().domain([0, 31.5]).range([height, 0])
+    var yAxis = d3.svg.axis().scale(yScale).orient("left")
+
+    
+
+    svg.append("g")
+    .attr("class", "yaxis")
+    .call(yAxis);
+
+  }
+  // U
+  else if(valindx==6)
+  {
+    svg.select(".yaxis").remove()
+    // var radiusScale = d3.scale.linear().domain([850, 24000000]).range([2, 200])
+    var yScale = d3.scale.linear().domain([0, 72]).range([height, 0])
+    var yAxis = d3.svg.axis().scale(yScale).orient("left")
+
+    
+
+    svg.append("g")
+    .attr("class", "yaxis")
+    .call(yAxis);
+
+  }
+  
+  d3.json("https://raw.githubusercontent.com/Raj-Kamal/Data/master/UpdDat.js", function(nations)  
+  // d3.json("KDATA.js", function(nations) 
+  {
+      // A bisector since many nation's data is sparsely-defined.
+      console.log(nations)
+      var bisect = d3.bisector(function(d) { return d[0]; });
+      // console.log(nations)
+      // Add a dot per nation. Initialize the data at 1800, and set the colors.
+      svg.select(".dots").remove();
+      arprob=["Severely Stunted","Stunted","Severely Wasted","Wasted","Severely Under-Weight","Under-Weight"];
+
+      ylb
+      .attr("font-family","Calibri")
+      .text(arprob[valindx-1])
+
+      var dot = svg.append("g")
+              .call(tip)
+              .attr("class", "dots")
+          .selectAll(".dot")
+              .data(interpolateData(1993,valindx))
+          .enter().append("circle")
+              .on('mouseover', tip.show)
+              .on('mouseout', tip.hide)
+              .attr("class", function (d) { return "dot " + d.Region; })
+          
+          .call(position)
+          .sort(order);
+    
+      // Add an overlay for the year label.
+      var box = label.node().getBBox();
+    
+      var overlay = svg.append("rect")
+              .attr("class", "overlay")
+              .attr("x", 0)
+              .attr("y", height-20)
+              .attr("width", width)
+              .attr("height", box.height)
+              .on("mouseover", enableInteraction);
+    
+      // Start a transition that interpolates the data based on year.
+      svg.transition()
+          .duration(15000)
+          .ease("linear")
+          .tween("year", tweenYear)
+          // .each("end", enableInteraction);
+    
+      // Positions the dots based on data.
+      function position(dot) {
+      dot
+          .attr("cx", function(d) { return xScale(x(d)); })
+          .attr("cy", function(d) { return yScale(y(d)); })
+
+          .attr("r", function(d) { return radiusScale(radius(d)); })
+          .style("fill", function(d) { return color(d.Region);})
+          
+          ;
+          }
+    
+      // Defines a sort order so that the smallest dots are drawn on top.
+      function order(a, b) { return radius(b) - radius(a); }
+    
+      // After the transition finishes, you can mouseover to change the year.
+      function enableInteraction() {
+          var yearScale = d3.scale.linear()
+              .domain([1993, 2018])
+              .range([0 +5, 0 + (width)-5])
+              .clamp(true);
+
+          // Cancel the current transition, if any.
+          svg.transition().duration(0);
+
+          overlay
+              .on("mouseover", mouseover)
+              .on("mouseout", mouseout)
+              .on("mousemove", mousemove)
+              .on("touchmove", mousemove);
+
+          function mouseover() { label.classed("active", true); }
+          function mouseout() { label.classed("active", false); }
+          function mousemove() { displayYear(yearScale.invert(d3.mouse(this)[0])); }
+      }
+
+      // Tweens the entire chart by first tweening the year, and then the data.
+      // For the interpolated data, the dots and label are redrawn.
+      function tweenYear() {
+          var year = d3.interpolateNumber(1993, 2018);
+          return function(t) { displayYear(year(t)); };
+      }
+
+      // Updates the display to show the specified year.
+      function displayYear(year) {
+          var tempres=interpolateData(year,valindx)
+          console.log("Raj2")
+          // var minA=getMin(tempres)
+          // var maxA=getMax(tempres)
+
+          // radiusScale = d3.scale.linear().domain([minA,maxA]).range([minA/(minA/10),38])
+
+          // console.log(radiusScale)
+          
+
+          dot.data(tempres).call(position).sort(order);
+
+
+          label
+          .attr("font-family","Calibri")
+          .text(Math.round(year));
+      }
+      function getMin(matrix, col)
+      {
+        var column = 10000000000000000;
+
+
+        for(var i=0; i<matrix.length; i++)
+        {
+           if(matrix[i].BurdenoverallS3d<column){
+              column=matrix[i].BurdenoverallS3d
+           }
+        }
+        return column;
+      }
+      function getMax(matrix, col)
+      {
+        var column = -1;
+        for(var i=0; i<matrix.length; i++)
+        {
+           if(matrix[i].BurdenoverallS3d>column)
+           {
+              column=matrix[i].BurdenoverallS3d
+           }
+        }
+        return column;
+      }
+
+    
+
+      // Interpolates the dataset for the given (fractional) year.
+      function interpolateData(year,yrindx) 
+      {
+
+          if(yrindx==1)
+          {
+            console.log(11)
+            var cdf = nations.map(function(d) 
+            {
+                return {
+                    Region: d.Region,
+                    Source: interpolateValues(d.Source, year),
+                    BurdenoverallS3d: interpolateValues(d.BurdenoverallS3d, year),
+                    OverallS3d: interpolateValues(d.OverallS3d, year)
+                };
+            });
+
+
+
+          }
+
+          else if(yrindx==2)
+          {
+            console.log(12)
+            var cdf = nations.map(function(d) 
+            {
+                return {
+                    Region: d.Region,
+                    Source: interpolateValues(d.Source, year),
+                    BurdenoverallS3d: interpolateValues(d.BurdenoverallS2d, year),
+                    OverallS3d: interpolateValues(d.OverallS2d, year)
+                };
+            });
+
+
+          }
+          else if(yrindx==3)
+          {
+            console.log(13)
+            var cdf = nations.map(function(d) 
+            {
+                return {
+                    Region: d.Region,
+                    Source: interpolateValues(d.Source, year),
+                    BurdenoverallS3d: interpolateValues(d.BurdenoverallW3d, year),
+                    OverallS3d: interpolateValues(d.OverallW3d, year)
+                };
+            });
+
+
+          }
+          else if(yrindx==4)
+          {
+            console.log(14)
+            var cdf = nations.map(function(d) 
+            {
+                return {
+                    Region: d.Region,
+                    Source: interpolateValues(d.Source, year),
+                    BurdenoverallS3d: interpolateValues(d.BurdenoverallW2d, year),
+                    OverallS3d: interpolateValues(d.OverallW2d, year)
+                };
+            });
+
+
+          }
+          else if(yrindx==5)
+          {
+            console.log(15)
+            var cdf = nations.map(function(d) 
+            {
+                return {
+                    Region: d.Region,
+                    Source: interpolateValues(d.Source, year),
+                    BurdenoverallS3d: interpolateValues(d.BurdenoverallU3d, year),
+                    OverallS3d: interpolateValues(d.OverallU3d, year)
+                };
+            });
+
+
+          }
+          else if(yrindx==6)
+          {
+            console.log(16)
+            var cdf = nations.map(function(d) 
+            {
+                return {
+                    Region: d.Region,
+                    Source: interpolateValues(d.Source, year),
+                    BurdenoverallS3d: interpolateValues(d.BurdenoverallU2d, year),
+                    OverallS3d: interpolateValues(d.OverallU2d, year)
+                };
+            });
+
+
+          }
+          // else
+          // {
+          //   console.log(12)
+          //   var cdf=nations.map(function(d) 
+          //   {
+
+          //       return {
+          //           Region: d.Region,
+          //           Survey_presentation_point: interpolateValues(d.Survey_presentation_point, year),
+          //           BurdenoverallS3d: interpolateValues(d.BurdenoverallS2d, year),
+          //           OverallS3d: interpolateValues(d.OverallS2d, year)
+          //       };
+          //   });
+          // }
+          // return 
+          // console.log(cdf)
+
+          var minA=getMin(cdf)
+          var maxA=getMax(cdf)
+          // if(yrindx==1){
+
+          // 	// var tempstu=(minA-400)/(28000000-400)*(3-1)+1
+          // 	// var tempstv=(maxA-400)/(28000000-400)*(150-145)+145
+          // 	// console.log(tempstu,tempstv)
+          // 	radiusScale = d3.scale.linear().domain([400,27413162]).range([0.5,250])
+
+          // }
+          // else if(yrindx==2){
+          // 	// var tempstu=(minA-1760)/(55550000-1760)*(3-1)+1
+          // 	// var tempstv=(maxA-1760)/(55550000-1760)*(150-145)+45
+          // 	// console.log(tempstu,tempstv)
+          // 	radiusScale = d3.scale.linear().domain([1760,55520325]).range([0.5,250])
+
+          // }
+          // else if(yrindx==3){
+          // 	// var tempstu=(minA-25)/(8444000-25)*(3-1)+1
+          // 	// var tempstv=(maxA-25)/(8444000-25)*(150-145)+45
+          // 	// console.log(tempstu,tempstv)
+          // 	radiusScale = d3.scale.linear().domain([25,8443550]).range([0.5,250])
+          	
+          // }
+          // else if(yrindx==4){
+          // 	// var tempstu=(minA-170)/(23962000-170)*(3-1)+1
+          // 	// var tempstv=(maxA-170)/(23962000-170)*(150-145)+145
+          // 	// console.log(tempstu,tempstv)
+          // 	radiusScale = d3.scale.linear().domain([170,23961425]).range([0.5,250])
+          	
+          // }
+          // else if(yrindx==5){
+          // 	// var tempstu=(minA-1000)/(49159000-1000)*(3-1)+1
+          // 	// var tempstv=(maxA-1000)/(49159000-1000)*(150-145)+145
+          // 	// console.log(tempstu,tempstv)
+          // 	radiusScale = d3.scale.linear().domain([170,18275440]).range([0.5,250])
+          	
+          // }
+          // else if(yrindx==6){
+          // 	// var tempstu=(minA-170)/(18276000-170)*(3-1)+1
+          // 	// var tempstv=(maxA-170)/(18276000-170)*(150-145)+145
+          // 	// console.log(tempstu,tempstv)
+          // 	radiusScale = d3.scale.linear().domain([1115,49158625]).range([0.5,250])
+          	
+          // }
+          return cdf;
+          
+      }
+
+      // Finds (and possibly interpolates) the value for the specified year.
+      function interpolateValues(values, year) {
+          var i = bisect.left(values, year, 0, values.length - 1),
+              a = values[i];
+          if (i > 0) {
+              var b = values[i - 1],
+                  t = (year - a[0]) / (b[0] - a[0]);
+              return a[1] * (1 - t) + b[1] * t;
+          }
+        return a[1];
+      }
+  });
+}
+</script>
+
+<p align="center">
+
+
+<button type="button" class="btn btn-outline-info btn-lg " onclick="drawMC(2)">Stunted</button>
+<button type="button" class="btn btn-outline-info btn-lg " onclick="drawMC(4)">Wasted</button> 
+<button type="button" class="btn btn-outline-info btn-lg" onclick="drawMC(6)">Underweight</button> 
+<button type="button" class="btn btn-outline-info btn-lg "  onclick="drawMC(1)">Severely Stunted</button> 
+<button type="button" class="btn btn-outline-info btn-lg " onclick="drawMC(3)">Severely Wasted</button>  
+<button type="button" class="btn btn-outline-info btn-lg " onclick="drawMC(5)">Severely Underweight</button>
+</p>

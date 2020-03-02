@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Female Vs Male Voter Turnout</title>
+</head>
+
+<style>
+
+    .columns {
+        text-align: center;
+        padding-right: 15px;
+        padding-left: 15px;
+        padding-top: 0;
+    }
+
+    .left-div {
+        display: inline-block;
+        max-width: 500px;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .right-div {
+        display: inline-block;
+        max-width: 500px;
+        text-align: left;
+    }
+
+
+
+    @media screen and (max-width: 800px) {
+
+        .left-div,
+        .right-div {
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
+</style>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+
+
+<button onclick="update(1)">Weight for height z-Score</button>
+<button onclick="update(2)">Height for Age z-Score</button>
+<body>
+    <div>
+        <div id="f_voters_kde" class="left-div"></div>
+        <!-- <div id="m_voters_kde" class="right-div"></div> -->
+    </div>
+
+</body>
+
+
+<script>
+
+
+    // set the dimensions and margins of the graph
+    var margin = { top: 30, right: 30, bottom: 30, left: 50 },
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    
+    var x = d3.scaleLinear()
+    .domain([-6, 6])
+    .range([0, width])
+
+    var xaxis = d3.axisBottom()
+        .scale(x)
+        .tickFormat(function (d) { return d});
+
+    var svg_female = d3.select("#f_voters_kde")
+        .attr("id","the_SVG_ID")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+    svg_female.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .attr('font-family', 'sans-serif')
+        .call(xaxis)
+
+    var y = d3.scaleLinear()
+        .range([height, 0])
+        .domain([0, 0.26]);
+    // get the data
+    var color = d3.scaleLinear()
+    .domain([0, 1])
+    .range(["white", "#69b3a2"])
+
+    texta=svg_female.append('text')
+        // .attr("class","g-text")
+        .attr('x', width / 2)
+        .attr('y', 20)
+        .attr('text-anchor', 'middle')
+        .attr('class', 'chart-title')
+        .attr('font-family', 'sans-serif')
+        .text('Weight for height z-Score');
+
+    var intervalHandle = null;
+    textb = svg_female.append("text")
+        // .attr("class","g-texg")
+        .attr("x", 340)
+        .attr("y", 50).text('NFHS 1').style("font-size", "20px").style("font-family", "sans-serif").attr("alignment-baseline", "middle")
+    function update(flag) 
+    {
+        d3.csv("https://raw.githubusercontent.com/mkapoorisid/election1/master/Untitled.csv", function (data) 
+        {
+            if(flag==1)
+            {
+                svg_female.select(".g-filk").remove();
+                svg_female.select(".mypath-a").remove();
+                svg_female.select(".mypath-b").remove();
+
+                clearInterval(intervalHandle)
+
+                svg_female.select(".g-filk").remove();
+                svg_female.select(".mypath-a").remove();
+                svg_female.select(".mypath-b").remove();
+               
+                texta.text('Weight for height z-Score');
+
+                var kde = kernelDensityEstimator(kernelEpanechnikov(.05), x.ticks(5))
+                var density_female = kde(data
+                    .filter(function (d) { return d.year === "NFHS 1" })
+                    .map(function (d) { return parseFloat(d.f_voters_turnout); }))
+
+                var grad_female = svg_female.append("defs")
+                    .attr("class","g-filk")
+                    .append("linearGradient")
+                    .attr("id", "grad");
+
+                grad_female.append("stop").attr("offset", "0%").attr("stop-color", "red");
+                grad_female.append("stop").attr("offset", "25%").attr("stop-color", "red");
+                grad_female.append("stop").attr("offset", "25%").attr("stop-color", "yellow");
+                grad_female.append("stop").attr("offset", "33.33%").attr("stop-color", "yellow");
+                grad_female.append("stop").attr("offset", "33.33%").attr("stop-color", "#BCBCBC");
+                grad_female.append("stop").attr("offset", "66.66%").attr("stop-color", "#BCBCBC");
+                grad_female.append("stop").attr("offset", "66.66%").attr("stop-color", "#BCBCBC");
+                grad_female.append("stop").attr("offset", "66.66%").attr("stop-color", "orange");
+                grad_female.append("stop").attr("offset", "75%").attr("stop-color", "orange");
+                grad_female.append("stop").attr("offset", "100%").attr("stop-color", "orange");
+
+                svg_female.append("path")
+                    .attr("class", "mypath-a")
+                    .datum(density_female)
+                    .attr("fill", "f5f1f1")
+                    .style("opacity", "0.1")
+                    .attr("opacity", ".2")
+                    .attr("stroke", "#000")
+                    .attr("stroke-width", 1)
+                    .attr("stroke-linejoin", "round")
+                    .attr("d", d3.line()
+                        .curve(d3.curveBasis)
+                        .x(function (d) { return x(d[0]); })
+                        .y(function (d) { return y(d[1]); })
+                    );
+
+                var plot_female = svg_female.append("path")
+                    .attr("class", "mypath-b")
+                    .datum(density_female)
+                    .style("fill", "url(#grad)")
+                    .attr("opacity", ".6")
+                    .attr("stroke", "#000")
+                    .attr("stroke-width", 1)
+                    .attr("stroke-linejoin", "round")
+                    .attr("d", d3.line()
+                        .curve(d3.curveBasis)
+                        .x(function (d) { return x(d[0]); })
+                        .y(function (d) { return y(d[1]); })
+                    );
+
+                let keyArray = ['NFHS 1', 'NFHS 2', 'NFHS 3', 'NFHS 4','CNNS']
+
+                let currentElem = 0;
+
+                intervalHandle = setInterval(function () 
+                {
+
+                    var t = d3.transition().duration(850);
+
+                    currentElem++;
+                    if (currentElem >= keyArray.length) {
+                        currentElem = 0;
+                    }
+
+                    var density_female = kde(data
+                        .filter(function (d) { return d.year === keyArray[currentElem].toString() })
+                        .map(function (d) { return parseFloat(d.f_voters_turnout); }))
+
+                    plot_female.attr("class", "mypath-a")
+                        .datum(density_female)
+                        .style("fill", "url(#grad)")
+                        .transition(t)
+                        .attr("opacity", ".6")
+                        .attr("stroke", "#000")
+                        .attr("stroke-width", 1)
+                        .attr("stroke-linejoin", "round")
+                        .attr("d", d3.line()
+                            .curve(d3.curveBasis)
+                            .x(function (d) { return x(d[0]); })
+                            .y(function (d) { return y(d[1]); })
+                        );
+
+                    textb.attr("x", 340).attr("y", 50).text(keyArray[currentElem].toString()).style("font-size", "20px").style("font-family", "sans-serif").attr("alignment-baseline", "middle")
+                }, 2500);
+
+            }
+            else if(flag==2)
+            {
+                
+                svg_female.select(".g-filk").remove();
+                svg_female.select(".mypath-a").remove();
+                svg_female.select(".mypath-b").remove();
+
+                clearInterval(intervalHandle)
+
+                svg_female.select(".g-filk").remove();
+                svg_female.select(".mypath-a").remove();
+                svg_female.select(".mypath-b").remove();
+
+                texta.text('Height for Age z-Score');
+ 
+                var kde = kernelDensityEstimator(kernelEpanechnikov(.05), x.ticks(5))
+                var density_female = kde(data
+                    .filter(function (d) { return d.year === "NFHS 1" })
+                    .map(function (d) { return parseFloat(d.m_voters_turnout); }))
+
+                var grad_female = svg_female.append("defs")
+                    .attr("class","g-filk")
+                    .append("linearGradient")
+                    .attr("id", "grad");
+
+
+                grad_female.append("stop").attr("offset", "0%").attr("stop-color", "red");
+                grad_female.append("stop").attr("offset", "25%").attr("stop-color", "red");
+                grad_female.append("stop").attr("offset", "25%").attr("stop-color", "yellow");
+                grad_female.append("stop").attr("offset", "33.33%").attr("stop-color", "yellow");
+                grad_female.append("stop").attr("offset", "33.33%").attr("stop-color", "#BCBCBC");
+                grad_female.append("stop").attr("offset", "66.67%").attr("stop-color", "#BCBCBC");
+                grad_female.append("stop").attr("offset", "66.67%").attr("stop-color", "#BCBCBC");
+                grad_female.append("stop").attr("offset", "75%").attr("stop-color", "#BCBCBC");
+                grad_female.append("stop").attr("offset", "100%").attr("stop-color", "#BCBCBC");
+
+                svg_female.append("path")
+                    .attr("class", "mypath-a")
+                    .datum(density_female)
+                    .attr("fill", "f5f1f1")
+                    .style("opacity", "0.1")
+                    .attr("opacity", ".2")
+                    .attr("stroke", "#000")
+                    .attr("stroke-width", 1)
+                    .attr("stroke-linejoin", "round")
+                    .attr("d", d3.line()
+                        .curve(d3.curveBasis)
+                        .x(function (d) { return x(d[0]); })
+                        .y(function (d) { return y(d[1]); })
+                    );
+
+                var plot_female = svg_female.append("path")
+                    .attr("class", "mypath-b")
+                    .datum(density_female)
+                    .style("fill", "url(#grad)")
+                    .attr("opacity", ".6")
+                    .attr("stroke", "#000")
+                    .attr("stroke-width", 1)
+                    .attr("stroke-linejoin", "round")
+                    .attr("d", d3.line()
+                        .curve(d3.curveBasis)
+                        .x(function (d) { return x(d[0]); })
+                        .y(function (d) { return y(d[1]); })
+                    );
+
+                let keyArray = ['NFHS 1', 'NFHS 2', 'NFHS 3', 'NFHS 4','CNNS']
+
+                // counter
+                let currentElem = 0;
+                intervalHandle = setInterval(function () 
+                {
+
+                    var t = d3.transition().duration(850);
+
+                    currentElem++;
+                    if (currentElem >= keyArray.length) {
+                        currentElem = 0;
+                    }
+
+                    var density_female = kde(data
+                        .filter(function (d) { return d.year === keyArray[currentElem].toString() })
+                        .map(function (d) { return parseFloat(d.m_voters_turnout); }))
+
+                    plot_female.attr("class", "mypath-a")
+                        .datum(density_female)
+                        .style("fill", "url(#grad)")
+                        .transition(t)
+                        .attr("opacity", ".6")
+                        .attr("stroke", "#000")
+                        .attr("stroke-width", 1)
+                        .attr("stroke-linejoin", "round")
+                        .attr("d", d3.line()
+                            .curve(d3.curveBasis)
+                            .x(function (d) { return x(d[0]); })
+                            .y(function (d) { return y(d[1]); })
+                        );
+
+                    textb.attr("x", 340).attr("y", 50).text(keyArray[currentElem].toString()).style("font-size", "20px").style("font-family", "sans-serif").attr("alignment-baseline", "middle")
+                }, 2500);
+            }
+        });            
+    }
+
+    function kernelDensityEstimator(kernel, X) {
+        return function (V) {
+            return X.map(function (x) {
+                return [x, d3.mean(V, function (v) { return kernel(x - v); })];
+            });
+        };
+    }
+    function kernelEpanechnikov(k) {
+        return function (v) {
+            return Math.abs(v /= k) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+        };
+    }
+    update(1);
+</script>

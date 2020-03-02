@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,height=device-height, initial-scale=1.0">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<style>
+body{
+    width:100%;
+
+    /*margin:50px auto;*/
+}
+svgq {
+  /*background-color: teal;*/
+  display: block;
+  /*margin-bottom: 5px;*/
+  }
+path {  stroke: #fff; }
+path:hover {  opacity:0.6; }
+rect:hover {  fill:blue; }
+.axis {  font: 10px sans-serif; }
+.legend tr{    border-bottom:2.5px solid grey; }
+.legend tr:first-child{    border-top:3px solid grey; }
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {  display: none; }
+.legend{
+    margin-bottom:76px;
+    display:inline-block;
+    border-collapse: collapse;
+    border-spacing: 0px;
+}
+.legend td{
+    padding:4px 5px;
+    vertical-align:bottom;
+}
+.legendFreq, .legendPerc{
+    align:right;
+    width:100px;
+}
+
+</style>
+<body>
+
+<div id='dashboard'>
+
+</div>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script>
+// var scale = 'scale(0.8)';
+// document.body.style.webkitTransform =scale;
+document.body.style.zoom = "66%";
+function dashboard(id, fData){
+    
+    var map = d3.select(id).append("svgq")
+        .attr("width", screen.width)
+        .attr("height", 100);
+    var headlin = map.append("text")
+        .attr("class", "headlin")
+        .attr("text-anchor", "start")
+        .attr("y", 60 )
+        .attr("x", 80)
+        .style("font-size", "60px")
+        .attr("font-family","Calibri")
+        .text("Prevalence of malnutrition and population of children under five years old.");
+
+    var barColor = "#B4A494";
+
+
+    // console.log(typeof(fData))
+    
+    
+    // compute total for each state.
+    fData.forEach(function(d){d.total=d.Burden[0]+d.Burden[1]+d.Burden[2];
+        // console.log(d.total)
+    });
+    
+    // function to handle histogram.
+    function histoGram(fD){
+        var hG={},    hGDim = {t: 10, r: 0, b: 220, l: 0};
+        hGDim.w = screen.width*1.25, 
+        hGDim.h = 1000 - hGDim.t - hGDim.b;
+            
+        //create svg for histogram.
+        var hGsvg = d3.select(id).append("svg")
+            .attr("width", hGDim.w + hGDim.l + hGDim.r)
+            .attr("height", hGDim.h + hGDim.t + hGDim.b).append("g")
+            .attr("transform", "translate(" + hGDim.l + "," + hGDim.t + ")");
+
+        // create function for x-axis mapping.
+        
+        // console.log(fD)
+        var x = d3.scale.ordinal().rangeRoundBands([0, hGDim.w], 0.01)
+                .domain(fD.map(function(d) {
+                    // console.log(d) 
+                    return d[0]; 
+
+                }));
+
+        // Add x-axis to the histogram svg.
+        hGsvg.append("g").attr("class", "xaxis")
+            .attr("transform", "translate(0," + hGDim.h + ")")
+            .call(d3.svg.axis().scale(x).orient("bottom"))
+            .selectAll("text")
+                .attr("y", 0)
+                .attr("x", 9)
+                .attr("dy", "0.35em")
+                .attr("transform", "rotate(90)")
+                .style("font-size", "25px")
+                .style("font-weight", "600")
+                .style("text-anchor", "start");
+        // Create function for y-axis map.
+        var y = d3.scale.linear().range([hGDim.h, 20])
+                .domain([0, d3.max(fD, function(d) { return d[1]; })]);
+
+        // Create bars for histogram to contain rectangles and freq labels.
+        var bars = hGsvg.selectAll(".bar").data(fD).enter()
+                .append("g").attr("class", "bar");
+        
+        //create the rectangles.
+        bars.append("rect")
+            .attr("x", function(d) { return x(d[0]); })
+            .attr("y", function(d) { return y(d[1]); })
+            .attr("width", x.rangeBand())
+            .attr("height", function(d) { return hGDim.h - y(d[1]); })
+            .attr('fill',barColor)
+            .on("mouseover",mouseover)// mouseover is defined below.
+            .on("mouseout",mouseout);// mouseout is defined below.
+            
+        //Create the frequency labels above the rectangles.
+        bars.append("text").text(function(d){ return d3.format(".2s")(d[1])})
+            .attr("x", function(d) { return x(d[0])+x.rangeBand()/2; })
+            .attr("y", function(d) { return y(d[1])-5; })
+            .style("font-size", "20px")
+            .style("font-weight", "800")
+            .attr("text-anchor", "middle");
+        
+        function mouseover(d){  // utility function to be called on mouseover.
+            // filter for selected state.
+             headlin
+                .text("Prevalence of malnutrition and population of children under five years old of "+ d[0]);
+            var st = fData.filter(function(s){ 
+                return s.Name == d[0];})[0];
+            
+            // console.log("ND") 
+            var nD = ['low','mid'].map(function(s){ 
+                if(s=='low'){
+                    return {type:s, freq:st.Prev[0]};
+                }
+                else if(s=='mid'){
+                    return {type:s, freq:(100-st.Prev[0])};
+                }
+                // else if(s=="high"){
+                //     return {type:s, freq:0};
+
+                // }
+            });
+            var nDD = ['low','mid'].map(function(s){ 
+                if(s=='low'){
+                    return {type:s, freq:st.Prev[1]};
+                }
+                else if(s=='mid'){
+                    return {type:s, freq:(100-st.Prev[1])};
+                }
+                // else if(s=="high"){
+                //     return {type:s, freq:0};
+
+                // }
+            });
+            var nDDD = ['low','mid'].map(function(s){ 
+                if(s=='low'){
+                    return {type:s, freq:st.Prev[2]};
+                }
+                else if(s=='mid'){
+                    return {type:s, freq:(100-st.Prev[2])};
+                }
+                // else if(s=="high"){
+                //     return {type:s, freq:0};
+
+                // }
+            });
+
+            pC.update(nD);
+            pCC.update(nDD);
+            pCCC.update(nDDD);
+            leg.update(nD);
+            // legg.update(nDD);
+            // leggg.update(nDDD);
+        }
+        
+        function mouseout(d){    // utility function to be called on mouseout.
+            // reset the pie-chart and legend.
+            headlin
+            .text("Prevalence of malnutrition and population of children under five years old.");    
+            pC.update(tF);
+            pCC.update(tFF);
+            pCCC.update(tFFF);
+            leg.update(tF);
+            
+        }
+        
+        // create function to update the bars. This will be used by pie-chart.
+
+        hG.update = function(nD, color){
+            // update the domain of the y-axis map to reflect change in frequencies.
+            // console.log("Reader")
+            // console.log(nD)
+            hGsvg.select(".xaxis").remove();
+            hGsvg.select(".xaxis").remove();
+            hGsvg.select(".xaxis").remove();
+            nD=nD.sort(sortFunction)
+            y.domain([0, d3.max(nD, function(d) { 
+                // console.log(d[1])
+                return d[1]; 
+            })]);
+            
+            var x = d3.scale.ordinal().rangeRoundBands([0, hGDim.w], 0.01)
+                    .domain(nD.sort(sortFunction).map(function(d) {
+                        // console.log(d) 
+                        return d[0]; 
+
+            }));
+
+            // Add x-axis to the histogram svg.
+            hGsvg.append("g").attr("class", "xaxis")
+                .attr("transform", "translate(0," + hGDim.h + ")")
+                .call(d3.svg.axis().scale(x).orient("bottom"))
+                .selectAll("text")
+                    .attr("y", 0)
+                    .attr("x", 9)
+                    .attr("dy", "0.35em")
+                    .attr("transform", "rotate(90)")
+                    .style("font-size", "25px")
+                    .style("font-weight", "600")
+                    .style("text-anchor", "start");
+
+            // x.domain(nD.sort(sortFunction).map(function(d) {
+            //     console.log(d[0]) 
+            //     return d[0]; 
+
+            // }));
+            // Attach the new data to the bars.
+            var bars = hGsvg.selectAll(".bar").data(nD.sort(sortFunction));
+            
+            // transition the height and color of rectangles.
+            bars.select("rect").transition().duration(500)
+                .attr("y", function(d) {return y(d[1]); })
+                .attr("height", function(d) { return hGDim.h - y(d[1]); })
+                .attr("fill", color);
+
+            // transition the frequency labels location and change value.
+            bars.select("text").transition().duration(500)
+                .text(function(d){ return d3.format(".2s")(d[1])})
+                .style("font-size", "20px")
+                .style("font-weight", "800")
+                .attr("y", function(d) {return y(d[1])-5; });            
+        }        
+        return hG;
+    }
+    
+    // function to handle pieChart.
+    function pieChart(pD)
+    {
+        function segColor(c){ return {low:"#22aed1", mid:"#343C44"}[c]; }
+        var pC ={},    pieDim ={w:screen.width*0.3, h: 350};
+        pieDim.r = Math.min(pieDim.w, pieDim.h) / 2;
+                
+        // create svg for pie chart.
+        var piesvg = d3.select(id).append("svg")
+            .attr("width", pieDim.w).attr("height", pieDim.h).append("g")
+            .attr("transform", "translate("+pieDim.w/2+","+pieDim.h/2+")");
+                                     
+
+        // create function to draw the arcs of the pie slices.
+        var arc = d3.svg.arc().outerRadius(pieDim.r - 10).innerRadius(0);
+
+        // create a function to compute the pie slice angles.
+        var pie = d3.layout.pie().sort(null).value(function(d) { return d.freq; });
+
+        // Draw the pie slices.        
+
+        piesvg.selectAll("path").data(pie(pD)).enter().append("text")
+            .each(function(d) { this._current = d; })
+            .text(function(d){ 
+                strngtodisp=""
+                if(d.data.type=="low"){
+                    strngtodisp="Underweight"
+                }
+                else if(d.data.type=="mid"){
+                    strngtodisp="Normal"
+                }
+                // else if(d.data.type=="high"){
+                //     strngtodisp="Wasted"
+                // } 
+                return strngtodisp+" "+d.data.freq+"%"
+            })
+            .attr("x", function(d) { return arc.centroid(d)[0] })
+            .attr("y", function(d) { return arc.centroid(d)[1] })
+            .style("font-size", "20px")
+            .style("font-weight", "1000")
+            .attr("text-anchor", "middle");
+        piesvg.selectAll("path").data(pie(pD)).enter().append("path").attr("d", arc)
+            .each(function(d) { this._current = d; })
+            .style("fill", function(d) {
+                // console.log(d) 
+                return segColor(d.data.type); 
+            })
+            .style("opacity", 0.6)
+            .on("mouseover",mouseover).on("mouseout",mouseout);
+        // piesvg.selectAll("path").data(pie(pD)).enter().append("path").attr("d", arc)
+        //     .each(function(d) { this._current = d; })
+        //     .style("fill", function(d) {
+        //         console.log(d) 
+        //         return segColor(d.data.type); 
+        //     })
+        //     .on("mouseover",mouseover).on("mouseout",mouseout);
+
+        // create function to update pie-chart. This will be used by histogram.
+        pC.update = function(nD){
+            
+            piesvg.selectAll("text").data(pie(nD)).transition().duration(500)
+                .each(function(d) { this._current = d; })
+                .text(function(d){ 
+                    strngtodisp=""
+                    if(d.data.type=="low"){
+                        strngtodisp="Underweight"
+                    }
+                    else if(d.data.type=="mid"){
+                        strngtodisp="Normal"
+                    }
+                    // else if(d.data.type=="high"){
+                    //     strngtodisp="Wasted"
+                    // } 
+                    return strngtodisp+" "+d.data.freq+"%"
+                })
+
+                .attr("x", function(d) { return arc.centroid(d)[0] })
+                .attr("y", function(d) { return arc.centroid(d)[1] })
+                .style("font-size", "20px")
+                .style("font-weight", "1000")
+                .attr("text-anchor", "middle");
+            piesvg.selectAll("path").data(pie(nD)).transition().duration(500)
+                .attrTween("d", arcTween);
+
+
+        }        
+        // Utility function to be called on mouseover a pie slice.
+        function mouseover(d){
+            // call the update function of histogram with new data.
+            hG.update(fData.sort(sortFunction).map(function(v)
+            {           
+                if(d.data.type=="low")
+                {
+
+                    return [v.Name,v.Burden[0]];
+                }
+                else if(d.data.type=='mid'){
+
+                    return [v.Name,v.Burden[0]];
+                }
+                // else if(d.data.type=="high"){
+                //     return [v.Name,v.Burden[0]];
+                // } 
+                
+            }),segColor("low"));
+            headlin
+                .text("Prevalance of underweight among children under five years and estimated number of underweight children by states, 2016-18.");
+                                     
+        }
+        //Utility function to be called on mouseout a pie slice.
+        function mouseout(d){
+            // call the update function of histogram with all data.
+            headlin
+             .text("Prevalence of malnutrition and population of children under five years old.");
+            hG.update(fData.sort(sortFunction).map(function(v){
+                return [v.Name,v.pop];}), barColor);
+        }
+        // Animating the pie-slice requiring a custom function which specifies
+        // how the intermediate paths should be drawn.
+        function arcTween(a) {
+            var i = d3.interpolate(this._current, a);
+            this._current = i(0);
+            return function(t) { return arc(i(t));    };
+        }    
+        return pC;
+    }
+    function pieChartt(pD)
+    {
+        function segColor(c){ return {low:"#99b509", mid:"#343C44"}[c]; }
+        var pCC ={},    pieDim ={w:screen.width*0.3, h: 350};
+        pieDim.r = Math.min(pieDim.w, pieDim.h) / 2;
+                
+        // create svg for pie chart.
+        var piesvg = d3.select(id).append("svg")
+            .attr("width", pieDim.w).attr("height", pieDim.h).append("g")
+            .attr("transform", "translate("+pieDim.w/2+","+pieDim.h/2+")");
+                                     
+
+        // create function to draw the arcs of the pie slices.
+        var arc = d3.svg.arc().outerRadius(pieDim.r - 10).innerRadius(0);
+
+        // create a function to compute the pie slice angles.
+        var pie = d3.layout.pie().sort(null).value(function(d) { return d.freq; });
+
+        // Draw the pie slices.        
+
+        piesvg.selectAll("path").data(pie(pD)).enter().append("text")
+            .each(function(d) { this._current = d; })
+            .text(function(d){ 
+                strngtodisp=""
+                if(d.data.type=="low"){
+                    strngtodisp="Stunted"
+                }
+                else if(d.data.type=="mid"){
+                    strngtodisp="Normal"
+                }
+                // else if(d.data.type=="high"){
+                //     strngtodisp="Wasted"
+                // } 
+                return strngtodisp+" "+d.data.freq+"%"
+            })
+            .attr("x", function(d) { return arc.centroid(d)[0] })
+            .attr("y", function(d) { return arc.centroid(d)[1] })
+            .style("font-size", "20px")
+            .style("font-weight", "1000")
+            .attr("text-anchor", "middle");
+        piesvg.selectAll("path").data(pie(pD)).enter().append("path").attr("d", arc)
+            .each(function(d) { this._current = d; })
+            .style("fill", function(d) {
+                // console.log(d) 
+                return segColor(d.data.type); 
+            })
+            .style("opacity", 0.6)
+            .on("mouseover",mouseover).on("mouseout",mouseout);
+        // piesvg.selectAll("path").data(pie(pD)).enter().append("path").attr("d", arc)
+        //     .each(function(d) { this._current = d; })
+        //     .style("fill", function(d) {
+        //         console.log(d) 
+        //         return segColor(d.data.type); 
+        //     })
+        //     .on("mouseover",mouseover).on("mouseout",mouseout);
+
+        // create function to update pie-chart. This will be used by histogram.
+        pCC.update = function(nD){
+            piesvg.selectAll("text").data(pie(nD)).transition().duration(500)
+                .each(function(d) { this._current = d; })
+                .text(function(d){ 
+                    strngtodisp=""
+                    if(d.data.type=="low"){
+                        strngtodisp="Stunted"
+                    }
+                    else if(d.data.type=="mid"){
+                        strngtodisp="Normal"
+                    }
+                    // else if(d.data.type=="high"){
+                    //     strngtodisp="Wasted"
+                    // } 
+                    return strngtodisp+" "+d.data.freq+"%"
+                })
+
+                .attr("x", function(d) { return arc.centroid(d)[0] })
+                .attr("y", function(d) { return arc.centroid(d)[1] })
+                .style("font-size", "20px")
+                .style("font-weight", "1000")
+                .attr("text-anchor", "middle");
+            piesvg.selectAll("path").data(pie(nD)).transition().duration(500)
+                .attrTween("d", arcTween);
+
+
+        }        
+        // Utility function to be called on mouseover a pie slice.
+        function mouseover(d){
+            // call the update function of histogram with new data.
+            hG.update(fData.sort(sortFunction).map(function(v)
+            {           
+                if(d.data.type=="low")
+                {
+                    return [v.Name,v.Burden[1]];
+                }
+                else if(d.data.type=='mid'){
+
+                    return [v.Name,v.Burden[1]];
+                }
+                // else if(d.data.type=="high"){
+                //     return [v.Name,v.Burden[1]];
+                // } 
+                
+            }),segColor("low"));
+            headlin
+                .text("Prevalance of stunting among children under five years and estimated number of stunted children by states, 2016-18.");
+
+                                     
+        }
+        //Utility function to be called on mouseout a pie slice.
+        function mouseout(d){
+            // call the update function of histogram with all data.
+            headlin
+            .text("Prevalence of malnutrition and population of children under five years old.");
+            hG.update(fData.map(function(v){
+                return [v.Name,v.pop];}), barColor);
+        }
+        // Animating the pie-slice requiring a custom function which specifies
+        // how the intermediate paths should be drawn.
+        function arcTween(a) {
+            var i = d3.interpolate(this._current, a);
+            this._current = i(0);
+            return function(t) { return arc(i(t));    };
+        }    
+        return pCC;
+    }
+    function pieCharttt(pD)
+    {
+        function segColor(c){ return {low:"#cc0001", mid:"#343C44"}[c]; }
+        var pCCC ={},    pieDim ={w:screen.width*0.3, h: 350};
+        pieDim.r = Math.min(pieDim.w, pieDim.h) / 2;
+                
+        // create svg for pie chart.
+        var piesvg = d3.select(id).append("svg")
+            .attr("width", pieDim.w).attr("height", pieDim.h).append("g")
+            .attr("transform", "translate("+pieDim.w/2+","+pieDim.h/2+")");
+                                     
+
+        // create function to draw the arcs of the pie slices.
+        var arc = d3.svg.arc().outerRadius(pieDim.r - 10).innerRadius(0);
+
+        // create a function to compute the pie slice angles.
+        var pie = d3.layout.pie().sort(null).value(function(d) { return d.freq; });
+
+        // Draw the pie slices.        
+
+        piesvg.selectAll("path").data(pie(pD)).enter().append("text")
+            .each(function(d) { this._current = d; })
+            .text(function(d){ 
+                strngtodisp=""
+                if(d.data.type=="low"){
+                    strngtodisp="Wasted"
+                }
+                else if(d.data.type=="mid"){
+                    strngtodisp="Normal"
+                }
+                // else if(d.data.type=="high"){
+                //     strngtodisp="Wasted"
+                // } 
+                return strngtodisp+" "+d.data.freq+"%"
+            })
+            .attr("x", function(d) { return arc.centroid(d)[0]*1.5 })
+            .attr("y", function(d) { return arc.centroid(d)[1] })
+            .style("font-size", "20px")
+            .style("font-weight", "1000")
+            .attr("text-anchor", "middle");
+        piesvg.selectAll("path").data(pie(pD)).enter().append("path").attr("d", arc)
+            .each(function(d) { this._current = d; })
+            .style("fill", function(d) {
+                // console.log(d) 
+                return segColor(d.data.type); 
+            })
+            .style("opacity", 0.6)
+            .on("mouseover",mouseover).on("mouseout",mouseout);
+        // piesvg.selectAll("path").data(pie(pD)).enter().append("path").attr("d", arc)
+        //     .each(function(d) { this._current = d; })
+        //     .style("fill", function(d) {
+        //         console.log(d) 
+        //         return segColor(d.data.type); 
+        //     })
+        //     .on("mouseover",mouseover).on("mouseout",mouseout);
+
+        // create function to update pie-chart. This will be used by histogram.
+        pCCC.update = function(nD){
+            
+            piesvg.selectAll("text").data(pie(nD)).transition().duration(500)
+                .each(function(d) { this._current = d; })
+                .text(function(d){ 
+                    strngtodisp=""
+                    if(d.data.type=="low"){
+                        strngtodisp="Wasted"
+                    }
+                    else if(d.data.type=="mid"){
+                        strngtodisp="Normal"
+                    }
+                    // else if(d.data.type=="high"){
+                    //     strngtodisp="Wasted"
+                    // } 
+                    return strngtodisp+" "+d.data.freq+"%"
+                })
+
+                .attr("x", function(d) { return (arc.centroid(d)[0]*1.5) })
+                .attr("y", function(d) { return arc.centroid(d)[1] })
+                .style("font-size", "20px")
+                .style("font-weight", "1000")
+                .attr("text-anchor", "middle");
+            piesvg.selectAll("path").data(pie(nD)).transition().duration(500)
+                .attrTween("d", arcTween);
+
+
+        }        
+        // Utility function to be called on mouseover a pie slice.
+        function mouseover(d){
+            // call the update function of histogram with new data. 
+            hG.update(fData.map(function(v)
+            {           
+                if(d.data.type=="low")
+                {
+                    return [v.Name,v.Burden[2]];
+                }
+                else if(d.data.type=='mid'){
+
+                    return [v.Name,v.Burden[2]];
+                }
+                // else if(d.data.type=="high"){
+                //     return [v.Name,v.Burden[2]];
+                // } 
+                
+            }),segColor("low"));
+            headlin
+                .text("Prevalance of wasting among children under five years and estimated number of wasted children by states, 2016-18.");
+                // .text("Prevalence and Burden of Wasted Children across States.");
+
+                                     
+        }
+        //Utility function to be called on mouseout a pie slice.
+        function mouseout(d){
+            // call the update function of histogram with all data.
+            headlin
+            .text("Prevalence of malnutrition and population of children under five years old.");
+            hG.update(fData.map(function(v){
+                return [v.Name,v.pop];}), barColor);
+        }
+        // Animating the pie-slice requiring a custom function which specifies
+        // how the intermediate paths should be drawn.
+        function arcTween(a) {
+            var i = d3.interpolate(this._current, a);
+            this._current = i(0);
+            return function(t) { return arc(i(t));    };
+        }    
+        return pCCC;
+    }
+    // function to handle legend.
+    function legend(lD){
+        var leg = {};
+            
+        // create table for legend.
+        var legend = d3.select(id).append("table").attr('class','legend');
+        
+        // create one row per segment.
+        var tr = legend.append("tbody").selectAll("tr").data(lD).enter().append("tr");
+            
+        // create the first column for each segment.
+        tr.append("td").append("svg").attr("width", '16').attr("height", '16').append("rect")
+            .attr("width", '16').attr("height", '16')
+			.attr("fill",function(d){ return segColor(d.type); });
+            
+        // create the second column for each segment.
+        tr.append("td").text(function(d){ 
+            if(d.type=="low"){
+                return "Underweight";
+            }
+            else if(d.type=="mid"){
+                return "Stunting";
+            }
+            else if(d.type=="high"){
+                return "Wasted";
+            }
+            
+
+        });
+
+        // create the third column for each segment.
+        tr.append("td").attr("class",'legendFreq')
+            .text(function(d){ return d3.format(".3s")(d.freq);});
+
+        // create the fourth column for each segment.
+        // tr.append("td").attr("class",'legendPerc')
+        //     .text(function(d){ return getLegend(d,lD);});
+
+        // Utility function to be used to update the legend.
+        leg.update = function(nD){
+            // update the data attached to the row elements.
+            var l = legend.select("tbody").selectAll("tr").data(nD);
+
+            // update the frequencies.
+            l.select(".legendFreq").text(function(d){ return d3.format(".3s")(d.freq);});
+
+            // update the percentage column.
+            // l.select(".legendPerc").text(function(d){ return getLegend(d,nD);});        
+        }
+        
+        function getLegend(d,aD){ // Utility function to compute percentage.
+            return d3.format("%")(d.freq/d3.sum(aD.map(function(v){ return v.freq; })));
+        }
+
+        return leg;
+    }
+    function sortFunction(a, b) {
+        if (a[1] === b[1]) {
+            return 0;
+        }
+        else {
+            return (a[1] > b[1]) ? -1 : 1;
+        }
+    }
+    // calculate total frequency by segment for all state.
+    var tF = ['low','mid'].map(function(d)
+    {
+        if(d=="low")
+        {
+            return{type:d, freq: 33.4}
+        }
+        else if(d=="mid"){
+            return{type:d, freq: 100-33.4}
+        }
+        // else if(d=="high"){
+        //     return{type:d, freq: 17.3}
+        // } 
+    });
+    var tFF = ['low','mid'].map(function(d)
+    {
+        if(d=="low")
+        {
+            return{type:d, freq: 34.7}
+        }
+        else if(d=="mid"){
+            return{type:d, freq: 100-34.7}
+        }
+        // else if(d=="high"){
+        //     return{type:d, freq: 17.3}
+        // } 
+    });
+    var tFFF = ['low','mid'].map(function(d)
+    {
+        if(d=="low")
+        {
+            return{type:d, freq: 17.3}
+        }
+        else if(d=="mid"){
+            return{type:d, freq: 100-17.3}
+        }
+        // else if(d=="high"){
+        //     return{type:d, freq: 17.3}
+        // } 
+    });
+
+    // calculate total frequency by state for all segment.
+    var sF = fData.map(function(d){return [d.Name,d.pop];});
+    sF=sF.sort(sortFunction);
+    // console.log(sF.sort(sortFunction))
+    // console.log(sF[0][1])
+
+    // sNF=[]
+    // for (var i = 0; i <sF.length; i++) {
+    //     console.log(sF[i])
+    // }
+
+    var pC = pieChart(tF), // create the histogram.        
+        pCC = pieChartt(tFF),
+        pCCC = pieCharttt(tFFF), // create the pie-chart.
+        hG = histoGram(sF);
+        // leg= legend(tF);  // create the legend.
+}
+</script>
+
+<script>
+// var freqData=[
+// {State:'AL',freq:{low:4786, mid:1319, high:249}}
+// ,{State:'AZ',freq:{low:1101, mid:412, high:674}}
+// ,{State:'CT',freq:{low:932, mid:2149, high:418}}
+// ,{State:'DE',freq:{low:832, mid:1152, high:1862}}
+// ,{State:'FL',freq:{low:4481, mid:3304, high:948}}
+// ,{State:'GA',freq:{low:1619, mid:167, high:1063}}
+// ,{State:'IA',freq:{low:1819, mid:247, high:1203}}
+// ,{State:'IL',freq:{low:4498, mid:3852, high:942}}
+// ,{State:'IN',freq:{low:797, mid:1849, high:1534}}
+// ,{State:'KS',freq:{low:162, mid:379, high:471}}
+// ];
+// console.log(typeof(freqData))
+// function repel(locate){
+d3.selectAll("svg").remove();
+d3.select(".legend").remove()
+
+
+    // d3.select("piesvg").remove();
+    // d3.select("tr").remove();
+d3.json("https://raw.githubusercontent.com/Raj-Kamal/Data/master/DashData_C.js", function(error, data)
+{
+    // console.log(data)
+    dashboard('#dashboard',data);
+        // if(locate==1){
+
+        //     data = data.filter(function(d, i) 
+        //     { 
+        //       if (d["Loc"] =="N" ) 
+        //       { 
+        //         return d; 
+        //       } 
+
+        //     })
+        //     dashboard('#dashboard',data);
+
+        // }
+        // else if(locate==2){
+        //     data = data.filter(function(d, i) 
+        //     { 
+        //       if (d["Loc"] =="S" ) 
+        //       { 
+        //         return d; 
+        //       } 
+
+        //     })
+        //     dashboard('#dashboard',data);
+
+        // }
+        // else{
+        //     data = data.filter(function(d, i) 
+        //     { 
+        //       if (d["Loc"] =="EW" ) 
+        //       { 
+        //         return d; 
+        //       } 
+
+        //     })
+        //     dashboard('#dashboard',data);
+
+        // }
+        
+
+
+});
+
+</script>
+<!-- <p align="center">
+
+<br> <br> 
+
+<button type="button" class="btn btn-outline-info btn-lg " onclick="repel(1)">Northern States</button>
+<button type="button" class="btn btn-outline-info btn-lg " onclick="repel(2)">Southern States</button> 
+<button type="button" class="btn btn-outline-info btn-lg"  onclick="repel(3)">East-West States</button> 
+</p> -->

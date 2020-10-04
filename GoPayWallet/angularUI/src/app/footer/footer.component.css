@@ -1,0 +1,43 @@
+body {
+    background: #f6f6f2;
+    padding-top: 3em;
+    font-family: 'Ubuntu', sans-serif;
+    margin-bottom: 0;
+}
+.footer{
+    display: grid;
+    grid-template-columns: 50% 50%;
+    justify-content: center;
+   
+}
+.register{
+    grid-column: 1;
+    text-align: center;
+    background-color: #388087;
+    color: #def2f1;
+    font-size: 3em;
+    padding-bottom: 2em;
+}
+.register button{
+    border: 1px solid #def2f1;
+    font-size: 1.5em;
+    padding: 0.5em 0.75em 0.5em 0.75em;
+}
+.contact-us{
+    grid-column: 2;
+    justify-content: center;
+    text-align: center;
+    font-size: 3em;
+    color: #388087;
+}
+.contact-us button{
+    border: 1px solid #388087;
+    font-size: 0.9em;
+    padding: 0.5em 1em 0.5em 1em;
+}
+.social-media-links i{
+    margin-left: 1em;
+    margin-top: 1.5em;
+    font-size: 1.5em;
+    padding-bottom: 1.5em;
+}

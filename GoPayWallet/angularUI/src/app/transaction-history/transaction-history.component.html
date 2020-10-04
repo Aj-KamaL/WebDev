@@ -1,0 +1,48 @@
+<app-logout-header></app-logout-header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <!-- <div *ngFor='let transaction of transactionList'>
+            <mat-card>
+                <pre> Transaction Type: {{transaction.transactionType}}    |    Amount of the Transaction: {{transaction.amount}}    |     Currency in which the transaction took place: {{transaction.currency}} 
+                   
+                    Date of Transaction: {{transaction.dateOfTransaction.split("T",1)}}   |   Time of Transaction: {{transaction.dateOfTransaction.split("T")[1].split(".",1)}}
+                </pre>            
+    
+            </mat-card>
+        </div> -->
+        <h1 class="heading">Transaction History</h1>
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <td> Type</td>
+                    <td> Amount</td>
+                    <td>Date</td>
+                    <td>Time</td>
+                    <td>Currency</td>
+                </tr>
+               
+            </thead>
+            <tbody *ngFor='let transaction of transactionList' >
+                <tr *ngIf="transaction.transactionType!='Error'">
+                    <td>{{transaction.transactionType}}</td>
+                    <td>{{transaction.amount}}</td>
+                    <td>{{transaction.dateOfTransaction.split("T",1)}}</td>
+                    <td>{{transaction.dateOfTransaction.split("T")[1].split(".",1)}}</td>
+                    <td>{{transaction.currency}}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,84 @@
+<!-- <app-header></app-header> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div> 
+        <mat-toolbar>
+            <span>GoPayWallet</span>
+            <div class="header-button">
+                <span id="home" (click)="home()">Home</span>
+                <span id="login" (click)="login()">Login</span>
+            </div>
+            
+        </mat-toolbar>
+    </div>
+    <form [formGroup]='registerForm' (ngSubmit)='register()'>
+        <div class="form-user-input">
+            <mat-form-field>
+                <input matInput [formControl]='userName' placeholder="Username" class="username" name='username'>
+            </mat-form-field>
+        </div>
+
+        <div class="form-user-input">
+            <mat-form-field>
+                <input matInput [formControl]='email' placeholder="Email" class="email" name='email'>
+            </mat-form-field>
+        </div>
+
+        <div class="form-user-input">
+            <mat-form-field>
+                <input matInput [formControl]='contact' placeholder="Contact Number" class="contact" name='contact'>
+            </mat-form-field>
+        </div>
+
+        <div class="form-user-input">
+            <mat-form-field>
+                <input matInput [formControl]='userPassword' type='password' placeholder="Password" class="password" name='password'>
+            </mat-form-field>
+        </div>
+
+        <div class="form-user-input">
+            <mat-form-field>
+                <input matInput type='text' [formControl]='userLocation' placeholder="Country of residence" class="country" name='country'>
+            </mat-form-field>
+        </div>
+
+        <h2>Enter Card Details</h2>
+
+        <div class="form-user-input">
+            <mat-form-field>
+                <input matInput type='text' [formControl]='nameOnCard' placeholder="Name on the card" class="nameOnCard" name='nameOnCard'>
+            </mat-form-field>
+        </div>
+
+        <div class="form-user-input">
+            <mat-form-field>
+                <input matInput type='text' [formControl]='expiryDate' placeholder="Expiry Date on the Card" class="expiryDate" name='expiryDate'>
+            </mat-form-field>
+        </div>
+
+        <div class="form-user-input">
+            <mat-form-field>
+                <input matInput type='text' [formControl]='cardNumber' placeholder="Card Number" class="cardNumber" name='cardNumber'>
+            </mat-form-field>
+        </div>
+
+        <!-- <div class="form-user-input">
+            <mat-form-field>
+                <input matInput type='text' [formControl]='cvv' placeholder="CVV on the card" class="cvv" name='cvv'>
+            </mat-form-field>
+        </div> -->
+
+        <button mat-raised-button>Submit</button>
+    </form>
+</body>
+
+</html>

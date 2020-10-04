@@ -1,0 +1,11 @@
+mat-toolbar{
+    background-color: #388087;
+    color: #FEFFFF;
+}
+.header-button button{
+    border-color:  #FEFFFF;
+}
+#login{
+    margin-left: 80vw;
+    margin-right: 3vw;
+}

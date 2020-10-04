@@ -1,0 +1,34 @@
+.container{
+    margin: 2em;
+    text-align: center;
+    align-content: center;
+    align-items: center;
+    text-align: center;
+}
+mat-card{
+    margin: 1em;
+    font-size: 2em;
+    background: #3Aafa9;
+    color: #def2f1;
+}
+.heading{
+    align-items: center;
+    text-align: center;
+    margin-left: 50%;
+    margin-bottom: 2em;
+}
+.table{
+    text-align: center;
+    margin-left: 2em;
+    width: 1800px;
+}
+td{
+    font-size: 1.5em;
+    margin: 2em;
+    padding: 2em;
+}
+thead{
+    background-color:  #388087;
+    color: #def2f1;
+    font-size: 1.3em;
+}

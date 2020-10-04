@@ -1,0 +1,145 @@
+<!-- <app-logout-header></app-logout-header> -->
+<!-- <mat-toolbar class="toolbar">
+    Dashboard
+    </mat-toolbar> -->
+    <mat-toolbar>
+      <span>GoPayWallet</span>
+      <div class="header-button">
+          <!-- <button mat-stroked-button id="dashboard"  (click)="dashboard()">Dashboard</button> -->
+          <button mat-stroked-button id="login" (click)="logout()">LogOut</button>
+          
+      </div>
+
+      
+      
+  </mat-toolbar>
+  <h1 class="welcome">Welcome {{userName}}</h1>
+<div class="example-card">
+  <mat-card (click)="balance()">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Your Wallet</mat-card-title>
+      <mat-card-subtitle>View Balance</mat-card-subtitle>
+    </mat-card-header>
+
+
+    <img mat-card-image class="image" src="\assets\wallet.png" alt="Photo of a wallet">
+  </mat-card>
+  <mat-card (click)="sendMoney()">
+    <mat-card-header >
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Send Money</mat-card-title>
+      <mat-card-subtitle>Send money to your Contacts</mat-card-subtitle>
+    </mat-card-header>
+
+    <img mat-card-image class="image" src="\assets\money-icon-png.jpg" alt="Photo of a Money">
+
+  </mat-card>
+  <mat-card (click)="history()">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Passbook</mat-card-title>
+      <mat-card-subtitle>View Your Transaction History</mat-card-subtitle>
+    </mat-card-header>
+
+    <img mat-card-image class="image" src="\assets\transaction history.png" alt="Photo of a transaction history">
+
+  </mat-card>
+  <mat-card (click)="addMoney()">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Add Money</mat-card-title>
+      <mat-card-subtitle>Add money to your wallet</mat-card-subtitle>
+    </mat-card-header>
+
+    <img mat-card-image class="image" src="\assets\coin-add-icon.png" alt="Photo of a transaction history">
+
+  </mat-card>
+</div>
+<div class="example-card two">
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Services</mat-card-title>
+      <mat-card-subtitle>Explore</mat-card-subtitle>
+    </mat-card-header>
+
+    <img mat-card-image class="image" src="\assets\servies.png" alt="Photo of a transaction history">
+
+  </mat-card>
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Offers and Cashbacks</mat-card-title>
+      <mat-card-subtitle>Explore</mat-card-subtitle>
+    </mat-card-header>
+
+    <img mat-card-image class="image" src="\assets\offer.jpg" alt="Photo of a transaction history">
+
+  </mat-card>
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Withdraw Cash</mat-card-title>
+      <mat-card-subtitle>Explore</mat-card-subtitle>
+    </mat-card-header>
+
+    <img mat-card-image class="image" src="\assets\cash.png" alt="Photo of a transaction history">
+  </mat-card>
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Your Rewards</mat-card-title>
+      <mat-card-subtitle>Explore</mat-card-subtitle>
+    </mat-card-header>
+
+    <img mat-card-image class="image" src="\assets\reward.png" alt="Photo of a transaction history">
+  </mat-card>
+
+</div>
+<div class="slides">
+
+
+  <div>
+    <img src="\assets\offer1.png" alt="" height="300px"> </div>
+
+
+  <div> <img src="\assets\offer2.jpg" alt="" height="300px"></div>
+
+
+  <div> <img src="\assets\jio_cashback_offer.jpg" alt="" height="300px"> </div>
+  <div> <img src="\assets\images.jpg" alt="" height="300px"> </div>
+
+
+</div>
+
+<!-- <ngb-carousel >
+        <ng-template ngbSlide>
+          <div class="picsum-img-wrapper">
+            <img src="../../assets/jio_cashback_offer.jpg" alt="Random first slide">
+          </div>
+          <div class="carousel-caption">
+            <h3>First slide label</h3>
+            <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+          </div>
+        </ng-template>
+        <ng-template ngbSlide>
+          <div class="picsum-img-wrapper">
+            <img src="../../assets/offer1.png" alt="Random second slide">
+          </div>
+          <div class="carousel-caption">
+            <h3>Second slide label</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          </div>
+        </ng-template>
+        <ng-template ngbSlide>
+          <div class="picsum-img-wrapper">
+            <img src="../../assets/offer2.jpg" alt="Random third slide">
+          </div>
+          <div class="carousel-caption">
+            <h3>Third slide label</h3>
+            <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+          </div>
+        </ng-template>
+      </ngb-carousel>
+     -->

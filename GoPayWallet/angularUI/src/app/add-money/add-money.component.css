@@ -1,0 +1,96 @@
+img{
+    height: 52em;
+    width: 77em;
+    grid-column: 1;
+}
+.addMoney{
+    display: grid;
+    grid-template-columns: 60% 40%;
+}
+mat-card{
+    width: 600px;
+    grid-column: 2;
+    margin-top: 2em;
+    background:  #388087;
+    color: whitesmoke;
+    text-align: center;
+}
+mat-card-header{
+    background:  #388087;
+    font-size: 2em;
+}
+button{
+    font-size: 1.5em;
+    border: 1px solid whitesmoke;
+    margin: 1em;
+    padding: 0.6em 2em 0.6em 2em;
+    margin-top: 3em;
+}
+#currency{
+    color: whitesmoke;
+    font-size: 2em;
+    width: 500px;
+    margin-top: 1.5em;
+}
+#currencyBackground{
+    background: #388087;
+    border-bottom: whitesmoke;
+}
+#currencyLabel{
+    color: whitesmoke;
+    font-size: 1.15em;
+    font-weight: lighter;
+    width: 400px;
+    margin-top: 3em;
+}
+#amountInput{
+    width: 400px;
+    margin-left: 2em;
+}
+#amountLabel{
+    font-size: 2em;
+    font-weight: lighter;
+    margin-top: 2em;
+}
+#addFrom{
+    font-size: 2em;
+    font-weight: lighter;
+    margin-bottom: 2em;
+    margin-top: 2em;
+}
+mat-card-title{
+    font-size: 20px;
+}
+#msg{
+    font-size: 3em;
+}
+@media screen and (max-width: 600px)
+{
+    img{
+        width: 40em;
+        height: auto;
+        padding-right: 13em;
+        align-content: center;
+    }
+    mat-card{
+        align-self: auto;
+        width: 340px;
+        margin-left: 0.5em;
+    }
+    .addMoney{
+        display: inline;
+    }
+    #currencyLabel{
+        color: whitesmoke;
+        font-size: 1em;
+        font-weight: lighter;
+        width: 200px;
+        margin-top: 3em;
+    }
+    #currency{
+        color: whitesmoke;
+        font-size: 2em;
+        width: 300px;
+        margin-top: 1.5em;
+    }
+}

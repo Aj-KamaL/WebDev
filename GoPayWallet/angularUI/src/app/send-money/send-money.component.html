@@ -1,0 +1,112 @@
+<app-logout-header></app-logout-header>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="addMoney">
+        <img src="\assets\sending-money- world.png" alt="Image of a sening money">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Transfer Money from anywhere to anywhere</mat-card-title>
+            </mat-card-header>
+            <p id="msg">{{msg}}</p>
+            <form [formGroup]='sendMoneyForm' >
+                <mat-card-content>
+
+
+                    <div class="contacts">
+                        <p class="sendMoneyFrom">Whom to Send: </p>
+                        <mat-form-field>
+                            <mat-label>Select Contact</mat-label>
+                            <!-- <input matInput type='text'  placeholder="Enter Number" class="amountSent" name='amountSent' required> -->
+                            <select matNativeControl required class="currencyBackground" [formControl]="userToSend">
+                                    <option *ngFor="let contact of contacts" [value]="contact.userId" >
+                                        {{contact.userName}}
+                                        
+                                    </option>
+                                
+                               
+                            </select>
+                        </mat-form-field>
+                    </div>
+
+
+
+  <p id="rate">1 {{sendIn}} = {{exchangeRate}} {{recieveIn}}</p>
+                    <div class="sendMoney">
+                        <div class="form-group">
+                            <p class="sendMoneyFrom">You Send In :</p>
+                            <mat-form-field class="form">
+                                <mat-label>currency</mat-label>
+                                <select matNativeControl required class="currencyBackground" [formControl]="currency" [(ngModel)]="sendIn">
+                                    <option value="INR">Rupee</option>
+                                    <option value="GBP">Pound</option>
+                                    <option value="CHF">Swiss Franc </option>
+                                    <option value="USD">Dollar</option>
+                                    <option value="CAD">Canadian Dollar</option>
+                                    <option value="EUR">Euro</option>
+                                </select>
+                            </mat-form-field>
+                            <!-- <p>{{sendIn}}</p> -->
+
+                        </div>
+                    </div>
+
+                    <div class="sendMoney">
+                        <div class="form-group">
+                    <p class="sendMoneyFrom">They recieve in:</p>
+                    <mat-form-field class="form">
+                        <mat-label>currency</mat-label>
+                        <select matNativeControl required class="currencyBackground" [formControl]="recievedIn" [(ngModel)]="recieveIn" >
+                            <option value="INR">Rupee</option>
+                            <option value="GBP">Pound</option>
+                            <option value="CHF">Swiss Franc </option>
+                            <option value="USD">Dollar</option>
+                            <option value="CAD">Canadian Dollar</option>
+                            <option value="EUR">Euro</option>
+                        </select>
+                       
+                    </mat-form-field>
+                    <!-- <p>{{recieveIn}}</p> -->
+                    </div>
+                    </div>
+                    <button mat-raised-button (click)="findExchangeRate()">Find Exchange Rate</button>
+
+                    <!-- <p>Please Enter the amount</p>
+                    <input type="String" name="Amount" placeholder=" Enter Amount" ngModel> -->
+
+                    <div class="form-user-input">
+                        <p class="sendMoneyFrom">Amount you Send: </p>
+                        <mat-form-field>
+                            <input matInput type='number' [formControl]="amount" [(ngModel)]="amountSent" placeholder="Enter amount" class="amountSent" name='amountSent'>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="form-user-input">
+                        <p class="sendMoneyFrom">Amount they recieve: </p>
+                        <!-- <mat-form-field> -->
+                            <!-- <input matInput type='text'  placeholder="0"  class="amountRecieved" name='amountRecieved'> -->
+                            <p id="changedAmount">{{amountSent*exchangeRate}}</p>
+                        <!-- </mat-form-field> -->
+                    </div>
+
+                    <button mat-raised-button (click)="sendMoney()">Send Money</button>
+                </mat-card-content>
+                <!-- <mat-card-actions>
+                    <button mat-button>Send</button>
+                </mat-card-actions> -->
+
+            </form>
+        </mat-card>
+    </div>
+
+</body>
+
+</html>

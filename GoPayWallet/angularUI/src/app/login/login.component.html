@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div> 
+        <mat-toolbar>
+            <span>GoPayWallet</span>
+            <div class="header-button">
+                <span id="home" (click)="home()">Home</span>
+                <span id="register" (click)="register()">Register</span>
+            </div>
+            
+        </mat-toolbar>
+    </div>
+    <form [formGroup]='loginForm' (ngSubmit)='login()'> 
+        <h1>Login Form</h1>    
+            <div class="form-user-input">
+                <mat-form-field>
+                    <input matInput [formControl]='userName' placeholder="Username" class="username" name='username'>
+                </mat-form-field>
+            </div>
+        
+            <div class="form-user-input">
+                <mat-form-field>
+                    <input matInput type='password' [formControl]='userPassword' placeholder="Password" class="password" name='password'>
+                </mat-form-field>
+            </div>
+        
+            <button mat-raised-button>Submit</button>
+        </form>
+</body>
+</html>

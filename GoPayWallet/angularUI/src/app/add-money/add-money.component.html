@@ -1,0 +1,50 @@
+<app-logout-header></app-logout-header>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="addMoney">
+        <img src="../../assets/addMoney.jpg" alt="Image of a piggy bank">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Add Money to your wallet</mat-card-title>
+            </mat-card-header>
+            <p id="msg">{{msg}}</p>
+            <form [formGroup]="addMoneyForm" (ngSubmit)="addMoney()">
+                <mat-card-content>
+                    <div class="form-group">
+                        <label for="amount" id="amountLabel">Enter amount you want to add</label>
+                        <input type="number" [formControl]="amount" id="amountInput" class="form-control" id="amount" placeholder="1000">
+                    </div>
+                    <mat-form-field id="currency">
+                        <mat-label id="currencyLabel">Currency to be Added!</mat-label>
+                        <select matNativeControl required id="currencyBackground" [formControl]="currency">
+                            <option value="INR">Indian Rupee</option>
+                            <option value="USD">US Dollar</option>
+                            <option value="CAD">Canadian Dollar</option>
+                            <option value="GBP">Pound</option>
+                            <option value="EUR">Euro</option>
+                        </select>
+                    </mat-form-field>
+
+                    <label for="addFrom" id="addFrom">Add From: Debit Card</label>
+
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button>Add</button>
+                </mat-card-actions>
+            </form>
+        </mat-card>
+    </div>
+
+</body>
+
+</html>

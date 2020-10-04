@@ -1,0 +1,91 @@
+.example-card {
+    display:flex; 
+    flex-direction: row;
+    margin: 20px;
+    padding-left: 8em;
+  margin-top: 5em;
+  padding-right:15em;
+     flex-wrap: wrap;
+     justify-content: space-around;
+     color: #17252A;
+    }
+    
+    .image{
+        max-width: 150px;
+        align-items: center;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+        
+    }
+    mat-toolbar{
+      background-color: #388087;
+      color: #FEFFFF;
+  }
+  #login{
+    margin-left: 80vw;
+    /* margin-right: 23vw; */
+    border: 1px solid #FEFFFF;
+}
+    .toolbar
+    {
+      color: white;
+      background-color: #3AAFA9;
+    }
+    .button{
+      color: teal;
+      margin: 2em;
+    }
+    .slides {
+      display: flex;    
+     overflow-x:scroll;
+      scroll-snap-type: x mandatory;
+     }
+       .slides > div {
+      display: flex;
+      flex-shrink: 0;
+      width: 100%;
+      height: 300px;
+      scroll-snap-align: start;
+      scroll-behavior: smooth;
+      background: #3AAFA9;
+      justify-content: center;
+      align-items: center;
+      font-size: 100px;
+      }
+      .welcome{
+        margin-left: 50%;
+        color: #388087;
+      }
+
+      @media(max-width: 360px){
+        .example-card {
+          display:flex; 
+          flex-direction: column;
+          margin: 20px;
+          padding-left: 2em;
+        margin-top: 3em;
+        padding-right:15em;
+        width: 2em;
+           flex-wrap: wrap;
+           /* justify-content: space-around; */
+           color: #17252A;
+          }
+          #login{
+            margin-left: 30vw;
+            /* margin-right: 23vw; */
+            border: 1px solid #FEFFFF;
+        }
+        mat-card{
+          margin-bottom: 1.5em;
+          width: 230px;
+        }
+        .slides img{
+          height: 250px;
+          width: 300px;
+        }
+        .welcome{
+          margin-left: 25%;
+        }
+      }

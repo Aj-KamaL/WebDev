@@ -1,0 +1,19 @@
+mat-toolbar{
+    background-color: #388087;
+    color: #FEFFFF;
+}
+.header-button button{
+    border-color:  #FEFFFF;
+}
+#login{
+    margin-left: 5vw;
+    margin-right: 3vw;
+}
+#dashboard{
+    margin-left: 75vw;
+}
+@media(max-width: 360px){
+    #dashboard{
+        margin-left: 5vw;
+    }
+}

@@ -1,24 +1,23 @@
 
 package com.Natwest.UserAuthenticationService.controller;
 
+import com.Natwest.UserAuthenticationService.exception.UserNotFoundException;
 import com.Natwest.UserAuthenticationService.exception.UserNullException;
 import com.Natwest.UserAuthenticationService.model.User;
 import com.Natwest.UserAuthenticationService.service.UserAuthenticationService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/v1/auth/")
 @CrossOrigin
-//@EnableFeignClients
+@EnableFeignClients
 public class UserAuthenticationController {
 
 
@@ -30,16 +29,34 @@ public class UserAuthenticationController {
 	}
 
 
-	@PostMapping("/register")
-	public ResponseEntity userRegister(@RequestBody User user){
-		try {
-			Boolean isUserRegistered = userAuthenticationService.saveUser(user);
-			responseEntity = new ResponseEntity(isUserRegistered, HttpStatus.CREATED);
-		} catch (UserNullException exception) {
-			responseEntity = new ResponseEntity("error", HttpStatus.CONFLICT);
-		}
-		return responseEntity;
+//	@PostMapping("/register")
+//	public ResponseEntity userRegister(@RequestBody User user){
+//		try {
+//			long userId = userAuthenticationService.saveUser(user);
+//			responseEntity = new ResponseEntity(userId, HttpStatus.CREATED);
+//		} catch (UserNullException exception) {
+//			responseEntity = new ResponseEntity("error", HttpStatus.CONFLICT);
+//		}
+//		return responseEntity;
+//	}
+@PostMapping("/register")
+public ResponseEntity userRegister(@RequestBody User user){
+	try {
+		long userId = userAuthenticationService.saveUser(user);
+		ArrayList<String> array = getToken(user.getUserName(),user.getUserPassword());
+		map.put("message" , "User successfully Registered");
+		map.put("token",array.get(0));
+		map.put("userId",array.get(1));
+		responseEntity = new ResponseEntity(map, HttpStatus.CREATED);
+	} catch (Exception e) {
+		map.put("message",e.getMessage());
+		map.put("token",null);
+		map.put("userId",null);
+		responseEntity = new ResponseEntity(map, HttpStatus.CONFLICT);
 	}
+	return responseEntity;
+}
+
 
 
 	@PostMapping("/login")
@@ -59,6 +76,13 @@ public class UserAuthenticationController {
 			return new ResponseEntity(map, HttpStatus.UNAUTHORIZED);
 		}
 		return new ResponseEntity(map,HttpStatus.OK);
+	}
+
+	@GetMapping("/userContacts")
+	public ResponseEntity<?> getContacts()  {
+		List<User> listOfUsers = userAuthenticationService.getAllUsers();
+		responseEntity = new ResponseEntity(listOfUsers, HttpStatus.OK);
+		return responseEntity;
 	}
 
 	public ArrayList<String> getToken(String userName, String userPassword) throws Exception {

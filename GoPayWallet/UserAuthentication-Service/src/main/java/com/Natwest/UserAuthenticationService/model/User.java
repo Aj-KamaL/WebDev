@@ -29,10 +29,28 @@ public class User {
     private String userName;
     private String userPassword;
     private String userLocation;
+    private String email;
+    private String contact;
     private Date userAddedDate;
 
     public long getUserId() {
         return userId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
     public void setUserId(long userId) {

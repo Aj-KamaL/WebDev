@@ -2,21 +2,20 @@ package com.Natwest.Wallet.service;
 
 import com.Natwest.Wallet.exception.InsufficientFundExeption;
 import com.Natwest.Wallet.exception.TransactionFailedException;
+import com.Natwest.Wallet.model.Card;
 import com.Natwest.Wallet.model.Transaction;
-import com.Natwest.Wallet.model.WalletUser;
 
 import java.util.List;
+import java.util.Map;
+
 public interface WalletService {
-    boolean createWalletUser(String userId);
+    boolean createWalletUser(String userId, String nameOnCard, String expiryDate, String cvv, String cardNumber);
 
     boolean debit(String userId, double amount,String currency) throws TransactionFailedException, InsufficientFundExeption;
 
     boolean credit(String userId, double amount,String currency) throws TransactionFailedException;
 
-
-//    Note updateNote(Note note, int id, String userId) throws NoteNotFoundExeption;
-//
-//    Note getNoteByNoteId(String userId,int noteId) throws NoteNotFoundExeption;
-
+    Map<String,Double> getWallet(String userId) throws TransactionFailedException;
     List<Transaction> getAllTransactionByUserId(String userId) throws TransactionFailedException;
+    Card getCardByUserId(String userId) throws TransactionFailedException;
 }

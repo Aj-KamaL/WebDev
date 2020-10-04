@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 
 import com.Natwest.Wallet.exception.InsufficientFundExeption;
 import com.Natwest.Wallet.exception.TransactionFailedException;
+import com.Natwest.Wallet.model.Card;
 import com.Natwest.Wallet.model.Transaction;
 import com.Natwest.Wallet.model.WalletUser;
 import com.Natwest.Wallet.repository.WalletRepository;
@@ -21,10 +22,11 @@ public class WalletServiceImpl implements WalletService{
     }
 
     @Override
-    public boolean createWalletUser(String userId) {
+    public boolean createWalletUser(String userId, String nameOnCard, String expiryDate, String cvv, String cardNumber) {
         WalletUser newWalletUser = new WalletUser();
         newWalletUser.setUserId(userId);
-
+        Card card =new Card(nameOnCard,expiryDate,cvv,cardNumber);
+        newWalletUser.setCard(card);
         WalletUser insertedWalletUser = walletRepository.insert(newWalletUser);
         if(insertedWalletUser==null)
         {
@@ -69,7 +71,9 @@ public class WalletServiceImpl implements WalletService{
             WalletUser walletUser = walletRepository.findById(userId).get();
             Map<String,Double> wallet = walletUser.getInWalletAmount();
             List<Transaction> listOfTransaction=walletUser.getTransactionList();
+            System.out.println(currency);
             double amountInWallet = wallet.get(currency);
+
             wallet.put(currency,amountInWallet+amount);
             Transaction transaction = new Transaction(listOfTransaction.size()+1,"Credit","Money Added to the Wallet",amount,currency,new java.util.Date(System.currentTimeMillis()));
             listOfTransaction.add(transaction);
@@ -85,11 +89,37 @@ public class WalletServiceImpl implements WalletService{
     }
 
     @Override
+    public Map<String,Double> getWallet(String userId) throws TransactionFailedException {
+        try{
+            WalletUser walletUser = walletRepository.findById(userId).get();
+            Map<String,Double> walletAmount=walletUser.getInWalletAmount();
+            return walletAmount;
+        }
+        catch (NoSuchElementException e)
+        {
+            throw new TransactionFailedException("Transaction Failed");
+        }
+    }
+
+    @Override
     public List<Transaction> getAllTransactionByUserId(String userId) throws TransactionFailedException {
         try{
             WalletUser walletUser = walletRepository.findById(userId).get();
             List<Transaction> listOfTransaction=walletUser.getTransactionList();
             return listOfTransaction;
+        }
+        catch (NoSuchElementException e)
+        {
+            throw new TransactionFailedException("Transaction Failed");
+        }
+    }
+
+    @Override
+    public Card getCardByUserId(String userId) throws TransactionFailedException {
+        try{
+            WalletUser walletUser = walletRepository.findById(userId).get();
+            Card card =walletUser.getCard();
+            return card;
         }
         catch (NoSuchElementException e)
         {

@@ -1,9 +1,10 @@
 package com.Natwest.UserAuthenticationService.service;
 
-import com.Natwest.UserAuthenticationService.exception.UserAlreadyExistsException;
 import com.Natwest.UserAuthenticationService.exception.UserNotFoundException;
 import com.Natwest.UserAuthenticationService.exception.UserNullException;
 import com.Natwest.UserAuthenticationService.model.User;
+
+import java.util.List;
 
 public interface UserAuthenticationService {
 
@@ -14,5 +15,6 @@ public interface UserAuthenticationService {
 
     public User findByUserIdAndPassword(long userId, String password) throws UserNotFoundException;
 	public User findByUserNameAndUserPassword(String userName,String userPassword) throws UserNotFoundException;
-    boolean saveUser(User user) throws UserNullException;
+    long saveUser(User user) throws UserNullException;
+    List<User> getAllUsers();
 }

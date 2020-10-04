@@ -14,28 +14,29 @@ public class WalletUser {
     private String userId;
     private Map<String,Double> inWalletAmount=new HashMap<>();
     private List<Transaction> transactionList;
-//    add card details per user today
-
+    private Card card;
 
     public WalletUser(String userId, List<Transaction> transactionList) {
         this.userId = userId;
-        this.inWalletAmount.put("C1",0.0);
-        this.inWalletAmount.put("C2",0.0);
-        this.inWalletAmount.put("C3",0.0);
-        this.inWalletAmount.put("C4",0.0);
-        this.inWalletAmount.put("C5",0.0);
-        this.inWalletAmount.put("C6",0.0);
+        this.inWalletAmount.put("INR",0.0);
+        this.inWalletAmount.put("CHF",0.0);
+        this.inWalletAmount.put("GBP",0.0);
+        this.inWalletAmount.put("USD",0.0);
+        this.inWalletAmount.put("CAD",0.0);
+        this.inWalletAmount.put("EUR",0.0);
         this.transactionList = transactionList;
+        card=new Card();
     }
 
     public WalletUser() {
-        this.inWalletAmount.put("C1",0.0);
-        this.inWalletAmount.put("C2",0.0);
-        this.inWalletAmount.put("C3",0.0);
-        this.inWalletAmount.put("C4",0.0);
-        this.inWalletAmount.put("C5",0.0);
-        this.inWalletAmount.put("C6",0.0);
+        this.inWalletAmount.put("INR",0.0);
+        this.inWalletAmount.put("CHF",0.0);
+        this.inWalletAmount.put("GBP",0.0);
+        this.inWalletAmount.put("USD",0.0);
+        this.inWalletAmount.put("CAD",0.0);
+        this.inWalletAmount.put("EUR",0.0);
         this.transactionList = new ArrayList<>();
+        card=new Card();
     }
 
     public String getUserId() {
@@ -62,12 +63,22 @@ public class WalletUser {
         this.transactionList = transactionList;
     }
 
+    public Card getCard() {
+        return card;
+    }
+
+    public void setCard(Card card) {
+        this.card = card;
+    }
+
+
     @Override
     public String toString() {
         return "WalletUser{" +
-                "userId=" + userId +
+                "userId='" + userId + '\'' +
                 ", inWalletAmount=" + inWalletAmount +
                 ", transactionList=" + transactionList +
+                ", card=" + card +
                 '}';
     }
 }

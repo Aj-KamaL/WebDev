@@ -1,6 +1,5 @@
 package com.Natwest.UserAuthenticationService.service;
 
-import com.Natwest.UserAuthenticationService.exception.UserAlreadyExistsException;
 import com.Natwest.UserAuthenticationService.exception.UserNotFoundException;
 import com.Natwest.UserAuthenticationService.exception.UserNullException;
 import com.Natwest.UserAuthenticationService.model.User;
@@ -8,7 +7,7 @@ import com.Natwest.UserAuthenticationService.repository.UserAuthenticationReposi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class UserAuthenticationServiceImpl implements UserAuthenticationService {
@@ -38,7 +37,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	}
 
 	@Override
-	public boolean saveUser(User user) throws UserNullException {
+	public long saveUser(User user) throws UserNullException {
 		user.setUserAddedDate(new java.util.Date(System.currentTimeMillis()));
 		User user1 = null;
 		boolean isRegistered = true;
@@ -47,7 +46,12 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		} catch (Exception e){
 			throw new UserNullException("User not Registered");
 		}
-		System.out.println(user1);
-		return true;
+		return user1.getUserId();
+
+	}
+
+	@Override
+	public List<User> getAllUsers(){
+		return userAuthenticationRepository.findAll();
 	}
 }

@@ -7,7 +7,6 @@ public class Transaction {
     private String transactionType;
     private String mssg;
     private double amount;
-//    add contact here by Friday
     private String currency;
     private Date dateOfTransaction;
 

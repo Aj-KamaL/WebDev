@@ -3,17 +3,21 @@ package com.Natwest.Wallet.controller;
 
 import com.Natwest.Wallet.exception.InsufficientFundExeption;
 import com.Natwest.Wallet.exception.TransactionFailedException;
+import com.Natwest.Wallet.model.Card;
 import com.Natwest.Wallet.model.Transaction;
 import com.Natwest.Wallet.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/transaction/")
 @CrossOrigin
+@EnableFeignClients
 public class WalletController {
 
     private WalletService walletService;
@@ -24,9 +28,15 @@ public class WalletController {
     }
 
     @PutMapping("/walletUser")
-    public ResponseEntity<?> createWalletUser(@RequestParam(value="userId", required=true) String userId)  {
+    public ResponseEntity<?> createWalletUser(@RequestParam(value="userId", required=true) String userId,
+                                              @RequestParam(value="nameOnCard", required=true) String nameOnCard,
+                                              @RequestParam(value="expiryDate", required=true) String expiryDate,
+//                                              @RequestParam(value="cvv", required=true) String cvv,
+                                              @RequestParam(value="cardNumber", required=true) String cardNumber
+
+    )  {
         try {
-            if(walletService.createWalletUser(userId)){
+            if(walletService.createWalletUser(userId,nameOnCard,expiryDate,null,cardNumber)){
                 responseEntity = new ResponseEntity(true, HttpStatus.CREATED);
             }
             else{
@@ -50,7 +60,7 @@ public class WalletController {
             responseEntity = new ResponseEntity(true, HttpStatus.OK);
         } catch (InsufficientFundExeption e)
         {
-            responseEntity = new ResponseEntity("Insufficient Funds" , HttpStatus.INTERNAL_SERVER_ERROR);
+            responseEntity = new ResponseEntity("Insufficient Funds" , HttpStatus.NOT_FOUND);
         } catch (TransactionFailedException e){
             responseEntity = new ResponseEntity("Transaction Failed" , HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -70,11 +80,33 @@ public class WalletController {
         }
         return responseEntity;
     }
+
+    @GetMapping("/wallet")
+    public ResponseEntity<?> getWalletAmount(@RequestParam(value="userId", required=true) String userId)  {
+        try {
+            Map<String,Double> walletAmount = walletService.getWallet(userId);
+            responseEntity = new ResponseEntity(walletAmount, HttpStatus.OK);
+        }catch (TransactionFailedException e) {
+            responseEntity = new ResponseEntity("Some Internal Error Try after sometime" , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
+    }
+
     @GetMapping("/all")
     public ResponseEntity<?> getAllTransactions(@RequestParam(value="userId", required=true) String userId)  {
         try {
             List<Transaction> transactionList = walletService.getAllTransactionByUserId(userId);
             responseEntity = new ResponseEntity(transactionList, HttpStatus.OK);
+        }catch (TransactionFailedException e) {
+            responseEntity = new ResponseEntity("Some Internal Error Try after sometime" , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
+    }
+    @GetMapping("/card")
+    public ResponseEntity<?> getCard(@RequestParam(value="userId", required=true) String userId)  {
+        try {
+            Card card= walletService.getCardByUserId(userId);
+            responseEntity = new ResponseEntity(card, HttpStatus.OK);
         }catch (TransactionFailedException e) {
             responseEntity = new ResponseEntity("Some Internal Error Try after sometime" , HttpStatus.INTERNAL_SERVER_ERROR);
         }
